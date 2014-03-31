@@ -34,7 +34,7 @@ namespace cs296
   public:
     
     dominos_t();
-    
+	void keyboard(unsigned char key);
     static base_sim_t* create()
     {
       return new dominos_t;
