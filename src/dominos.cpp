@@ -116,8 +116,8 @@ dominos_t::dominos_t()
 	 b2PolygonShape polygon;
 	 boxshape.Set(vertices, 5);
 	 seatbody->CreateFixture(fd1);
-////////////////////////////////////////////////////////////////////////////// 
-
+	 
+	 
 //////////////////////////////////////////////////////////////////////////////        
 	 ///Adding Rovolute Joints between tires and cycle frame
 	 b2RevoluteJointDef revoluteJointDef;
@@ -130,7 +130,6 @@ dominos_t::dominos_t()
 	 m_world->CreateJoint(&revoluteJointDef);
 
 //////////////////////////////////////////////////////////////////////////////         
-
 	///back gear
 	b2CircleShape gearshape;
 	gearshape.m_radius = 3.0;
@@ -269,25 +268,35 @@ dominos_t::dominos_t()
 	jointDef6.Initialize(pedalbody, pedal2, pedal2->GetWorldCenter());
 	m_world->CreateJoint(&jointDef6);
 //////////////////////////////////////////////////////////////////////////////
-/*
 	///Creating the legs of man on pedal
 	b2FixtureDef legfd;
 	b2PolygonShape legshape;
 	legfd.filter.groupIndex = -1;
-	//legfd.filter.categoryBits = 0x0004;
-    //legfd.filter.maskBits = 0x0008;
-	legfd.density=1.0f;  
-	//b2Vec2 legpt[5];
-	//legpt[0].Set(-3.0f, 2.0f);
+	legfd.density=0.1f;  
 	legshape.SetAsBox(1.0f,8.0f);
 	legfd.shape = &legshape;
 	b2BodyDef legDef;
 	legDef.type = b2_dynamicBody;
-	legDef.position.Set(-6.0f, 15.0f);
+	legDef.position.Set(-6.0f, 12.0f);
 	
 	b2Body* legbody1 = m_world->CreateBody(&legDef);
 	legbody1->CreateFixture(&legfd);
-*/
+	
+	///welding behind leg1 to pedal1
+	b2WeldJointDef jointleg1Def;
+	jointleg1Def.Initialize(legbody1, pedal1, pedal1->GetWorldCenter());
+	m_world->CreateJoint(&jointleg1Def);
+	
+	legDef.position.Set(-6.0f, 20.0f);
+	b2Body* legbody2 = m_world->CreateBody(&legDef);
+	legbody2->CreateFixture(&legfd);
+	
+	///welding behind leg1 to pedal1
+	b2WeldJointDef jointleg2Def;
+	jointleg2Def.Initialize(legbody2, pedal2, pedal2->GetWorldCenter());
+	m_world->CreateJoint(&jointleg2Def);
+//////////////////////////////////////////////////////////////////////////////
+	
 //////////////////////////////////////////////////////////////////////////////
 	///welding behind gear to behind tire
 	b2WeldJointDef jointDef7;
