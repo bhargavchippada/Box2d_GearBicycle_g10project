@@ -75,8 +75,7 @@ dominos_t::dominos_t()
 	 b2PolygonShape boxshape;
 	 boxshape.SetAsBox(7,0.6,b2Vec2(7,0),0);
 	 b2FixtureDef *fd1 = new b2FixtureDef;
-	 fd1->density = 0.1f;
-	 
+	 fd1->density = 2.0f;
 	 fd1->filter.categoryBits = 0x00F2;//
 	 fd1->filter.maskBits = 0x00F4;//
 	 fd1->friction = 0.5f;
@@ -124,7 +123,7 @@ dominos_t::dominos_t()
 	gearfd.filter.categoryBits = 0x0002;//
 	gearfd.filter.maskBits = 0x0004;//
 	gearfd.shape = &gearshape;
-	gearfd.density = 5.0f;
+	gearfd.density = 1.0f;
 	gearfd.friction = 100.0f;
 	gearfd.restitution = 0.0f;
 	b2BodyDef gearbd;
@@ -160,7 +159,7 @@ dominos_t::dominos_t()
 	b2PolygonShape chainshape;
 	chainshape.SetAsBox(0.5f, 0.25f);
 	chainfd.shape = &chainshape;
-	chainfd.density=5.1f;
+	chainfd.density=1.0f;
 	b2BodyDef chainDef;
 	chainDef.type = b2_dynamicBody;
 	
@@ -219,7 +218,7 @@ dominos_t::dominos_t()
     //ballfd2.filter.groupIndex = -2;
 	pedalfd.filter.categoryBits = 0x0003;
     pedalfd.filter.maskBits = 0x0001;
-	pedalfd.density=2.0f;  
+	pedalfd.density=1.0f;  
 	b2PolygonShape pedrodshape;
 	pedrodshape.SetAsBox(.25f, 4.5f);
 	pedalfd.shape = &pedrodshape;
