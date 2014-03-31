@@ -1,4 +1,3 @@
-
 #include "cs296_base.hpp"
 #include "render.hpp"
 
@@ -24,10 +23,10 @@ namespace cs296
   {
 	  switch(key){
 		case('w'):
-		sbody1->ApplyAngularImpulse( -50,0 );
+		sbody1->ApplyAngularImpulse( -150,0 );
 		break;
 		case('s'):
-		wheel1->ApplyAngularImpulse( 50,0 );
+		wheel1->ApplyAngularImpulse( 150,0 );
 		break;
 	}
   }
