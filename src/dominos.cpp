@@ -17,14 +17,17 @@ namespace cs296
 	b2Body* frontgear;
 	///back wheel
 	b2Body* wheel1;
+	///front wheel
+	 b2Body* wheel2;
 	void dominos_t::keyboard(unsigned char key)
 	{
 	  switch(key){
 		case('w'):
-		frontgear->ApplyAngularImpulse( -50,0 );
+		frontgear->ApplyAngularImpulse( -100,0 );
 		break;
 		case('s'):
-		wheel1->ApplyAngularImpulse( 50,0 );
+		wheel1->ApplyAngularImpulse( 100,0 );
+		wheel2->ApplyAngularImpulse( 100,0 );
 		break;
 	}
 	}
@@ -36,8 +39,7 @@ dominos_t::dominos_t()
 	  b2EdgeShape shape; 
 	  shape.Set(b2Vec2(-90.0f, 0.0f), b2Vec2(90.0f, 0.0f)); 
 	  b2FixtureDef *grnd = new b2FixtureDef;
-	  grnd->filter.categoryBits = 0x00F4;//
-	  grnd->filter.maskBits = 0x00F2;//
+	  grnd->filter.groupIndex = -5;//
 	  grnd->shape=&shape;
 	  b2BodyDef bd;
 	  b2Body* b1=m_world->CreateBody(&bd); 
@@ -54,11 +56,7 @@ dominos_t::dominos_t()
 	 fd2->filter.groupIndex = -1;//
 	 fd2->shape=new b2CircleShape;
 	 fd2->shape=&circleDef;
-	 fd2->filter.categoryBits = 0x00F2;//
-	 fd2->filter.maskBits = 0x00F4;//
 
-	 ///front wheel
-	 b2Body* wheel2;
 	 b2BodyDef* wheelDef = new b2BodyDef;
 	 wheelDef->type = b2_dynamicBody;
 	 wheelDef->allowSleep = false;
@@ -76,8 +74,6 @@ dominos_t::dominos_t()
 	 boxshape.SetAsBox(7,0.6,b2Vec2(7,0),0);
 	 b2FixtureDef *fd1 = new b2FixtureDef;
 	 fd1->density = 2.0f;
-	 fd1->filter.categoryBits = 0x00F2;//
-	 fd1->filter.maskBits = 0x00F4;//
 	 fd1->friction = 0.5f;
 	 fd1->restitution = 0.2f;
 	 fd1->filter.groupIndex = -1;//
@@ -101,7 +97,27 @@ dominos_t::dominos_t()
 	 
 	 boxshape.SetAsBox(8,0.6,b2Vec2(14+8*cosf(b2_pi/3),8*sinf(b2_pi/3)),b2_pi/3);
 	 rodbody->CreateFixture(fd1);
-		 
+	 
+	 boxshape.SetAsBox(1.5,0.4,b2Vec2((16-1.5)*cosf(b2_pi/3),(16+1.5)*sinf(b2_pi/3)),-b2_pi/3);
+	 rodbody->CreateFixture(fd1);
+//////////////////////////////////////////////////////////////////////////////
+	 /// seat on cycle
+	 b2BodyDef* seatDef=new b2BodyDef;
+	 seatDef->type= b2_dynamicBody;
+	 seatDef->position.Set(wheel1->GetWorldCenter().x+(16-3)*cosf(b2_pi/3), wheel1->GetWorldCenter().y+(16+3)*sinf(b2_pi/3));
+	 b2Body* seatbody=m_world->CreateBody(seatDef);
+	 
+	 b2Vec2 vertices[5];
+	 vertices[0].Set(-3.0f, 2.0f);
+	 vertices[1].Set(4.0f, 2.0f);
+	 vertices[2].Set(4.0f, 1.0f);
+	 vertices[3].Set(0.0f, -0.1f);
+	 vertices[3].Set(-2.0f, -0.1f);
+	 b2PolygonShape polygon;
+	 boxshape.Set(vertices, 5);
+	 seatbody->CreateFixture(fd1);
+////////////////////////////////////////////////////////////////////////////// 
+
 //////////////////////////////////////////////////////////////////////////////        
 	 ///Adding Rovolute Joints between tires and cycle frame
 	 b2RevoluteJointDef revoluteJointDef;
@@ -119,7 +135,7 @@ dominos_t::dominos_t()
 	b2CircleShape gearshape;
 	gearshape.m_radius = 3.0;
 	b2FixtureDef gearfd;
-	//ballfd.filter.groupIndex = -2;
+	gearfd.filter.groupIndex = -1;//
 	gearfd.filter.categoryBits = 0x0002;//
 	gearfd.filter.maskBits = 0x0004;//
 	gearfd.shape = &gearshape;
@@ -152,10 +168,8 @@ dominos_t::dominos_t()
 	b2Body* conveyer[44];
 	
 	b2FixtureDef chainfd;
-    chainfd.filter.categoryBits = 0x0004;//these are different
-    chainfd.filter.maskBits = 0x0002;//
-    chainfd.filter.groupIndex = -1;//  
-    //ballfd2.filter.groupIndex = -2;
+    chainfd.filter.categoryBits = 0x0004;
+    chainfd.filter.maskBits = 0x0002;
 	b2PolygonShape chainshape;
 	chainshape.SetAsBox(0.5f, 0.25f);
 	chainfd.shape = &chainshape;
@@ -215,9 +229,7 @@ dominos_t::dominos_t()
 //////////////////////////////////////////////////////////////////////////////	
 	///Creating connecting pedal rod and pedals
     b2FixtureDef pedalfd;
-    //ballfd2.filter.groupIndex = -2;
-	pedalfd.filter.categoryBits = 0x0003;
-    pedalfd.filter.maskBits = 0x0001;
+    pedalfd.filter.groupIndex = -1;
 	pedalfd.density=1.0f;  
 	b2PolygonShape pedrodshape;
 	pedrodshape.SetAsBox(.25f, 4.5f);
@@ -235,9 +247,6 @@ dominos_t::dominos_t()
 	m_world->CreateJoint(&jointDef4);
 //////////////////////////////////////////////////////////////////////////////
 	///pedal1: Creating the first pedal
-    //ballfd2.filter.groupIndex = -2;
-	pedalfd.filter.categoryBits = 0x0008;
-    pedalfd.filter.maskBits = 0x0008;
 	pedrodshape.SetAsBox(1.25f, .25f);  
 	pedalDef.fixedRotation=true;
 	pedalDef.position.Set(-6.0f, 4.0f);
@@ -260,10 +269,35 @@ dominos_t::dominos_t()
 	jointDef6.Initialize(pedalbody, pedal2, pedal2->GetWorldCenter());
 	m_world->CreateJoint(&jointDef6);
 //////////////////////////////////////////////////////////////////////////////
+/*
+	///Creating the legs of man on pedal
+	b2FixtureDef legfd;
+	b2PolygonShape legshape;
+	legfd.filter.groupIndex = -1;
+	//legfd.filter.categoryBits = 0x0004;
+    //legfd.filter.maskBits = 0x0008;
+	legfd.density=1.0f;  
+	//b2Vec2 legpt[5];
+	//legpt[0].Set(-3.0f, 2.0f);
+	legshape.SetAsBox(1.0f,8.0f);
+	legfd.shape = &legshape;
+	b2BodyDef legDef;
+	legDef.type = b2_dynamicBody;
+	legDef.position.Set(-6.0f, 15.0f);
+	
+	b2Body* legbody1 = m_world->CreateBody(&legDef);
+	legbody1->CreateFixture(&legfd);
+*/
+//////////////////////////////////////////////////////////////////////////////
 	///welding behind gear to behind tire
 	b2WeldJointDef jointDef7;
 	jointDef7.Initialize(gearbody1, wheel1, gearbody1->GetWorldCenter());
 	m_world->CreateJoint(&jointDef7);
+		 
+	///welding behind seat to cycle frame
+	b2WeldJointDef jointDef8;
+	jointDef8.Initialize(seatbody, rodbody, seatbody->GetWorldCenter());
+	m_world->CreateJoint(&jointDef8);
 }
   sim_t *sim = new sim_t("Dominos", dominos_t::create);
 }
