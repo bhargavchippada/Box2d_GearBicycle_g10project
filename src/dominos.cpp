@@ -17,8 +17,19 @@ namespace cs296
   /**  The is the constructor 
    * This is the documentation block for the constructor.
    */ 
+   b2Body* sbody;
    b2Body* sbody1;
    b2Body* wheel1;
+   b2CircleShape circle4;
+   	b2WeldJointDef jointDef8;
+   	b2Vec2 vec;
+   	b2BodyDef ballbd;
+	float i=6;
+         b2FixtureDef ballfd;
+      //ballfd1.filter.groupIndex = -2;
+    
+      //ballfd1.shape = &circle1;
+
   void dominos_t::keyboard(unsigned char key)
   {
 	  switch(key){
@@ -28,6 +39,47 @@ namespace cs296
 		case('s'):
 		wheel1->ApplyAngularImpulse( 150,0 );
 		break;
+		case('a'):
+		//b2CircleShape circle4;
+		if(i>4)i=i-.5;
+      circle4.m_radius = i*.5f;
+		ballfd.shape=&circle4;
+		vec=b2Vec2(sbody->GetWorldCenter());
+		m_world->DestroyBody(sbody);
+		      //b2BodyDef ballbd;
+      ballbd.type = b2_dynamicBody;
+      
+      ballbd.position=vec;
+      sbody = m_world->CreateBody(&ballbd);
+		sbody->CreateFixture(&ballfd);
+		jointDef8.Initialize(sbody, wheel1, sbody->GetWorldCenter());//,sbody1->GetWorldCenter());//,sbody1->GetWorldCenter());
+	m_world->CreateJoint(&jointDef8);
+		//ballfd.filter.categoryBits = 0x0004;
+      //ballfd.filter.maskBits = 0x0002;
+      
+      
+		break;
+			case('d'):
+		//b2CircleShape circle4;
+		if(i<6)i=i+.5;
+      circle4.m_radius = i*.5f;
+		ballfd.shape=&circle4;
+		vec=b2Vec2(sbody->GetWorldCenter());
+		m_world->DestroyBody(sbody);
+		  //    b2BodyDef ballbd;
+      ballbd.type = b2_dynamicBody;
+      
+      ballbd.position=vec;
+      sbody = m_world->CreateBody(&ballbd);
+		sbody->CreateFixture(&ballfd);
+		jointDef8.Initialize(sbody, wheel1, sbody->GetWorldCenter());//,sbody1->GetWorldCenter());//,sbody1->GetWorldCenter());
+	m_world->CreateJoint(&jointDef8);
+		//ballfd.filter.categoryBits = 0x0004;
+      //ballfd.filter.maskBits = 0x0002;
+      
+      
+		break;
+	
 	}
   }
   dominos_t::dominos_t()
@@ -108,6 +160,9 @@ namespace cs296
 		 boxshape.SetAsBox(8,0.6,b2Vec2(8*cosf(b2_pi/3),8*sinf(b2_pi/3)),b2_pi/3);
 		 rodbody->CreateFixture(fd1);
 		 
+		 boxshape.SetAsBox(2.5,0.6,b2Vec2(0+(2*cosf(b2_pi/4)),(2*sinf(-b2_pi/4))),-b2_pi/4);
+		 rodbody->CreateFixture(fd1);
+		 
 		 boxshape.SetAsBox(8,0.6,b2Vec2(30-8*cosf(b2_pi/3),8*sinf(b2_pi/3)),-b2_pi/3);
 		 rodbody->CreateFixture(fd1);
 		 
@@ -119,7 +174,7 @@ namespace cs296
          
          //Add Rovolute Joints
          b2RevoluteJointDef revoluteJointDef;
-         revoluteJointDef.enableMotor = true;
+         //revoluteJointDef.enableMotor = true;
          
          revoluteJointDef.Initialize(rodbody, wheel1, wheel1->GetWorldCenter());
          b2RevoluteJoint* motor1 = (b2RevoluteJoint*)m_world->CreateJoint(&revoluteJointDef);
@@ -129,11 +184,11 @@ namespace cs296
          
 
 
-      b2Body* sbody;
+      //b2Body* sbody;
       b2CircleShape circle;
       circle.m_radius = 3.0;
 	
-      b2FixtureDef ballfd;
+      //b2FixtureDef ballfd;
       //ballfd.filter.groupIndex = -2;
       ballfd.filter.categoryBits = 0x0002;
       ballfd.filter.maskBits = 0x0004;
@@ -141,7 +196,7 @@ namespace cs296
       ballfd.density = 5.0f;
       ballfd.friction = 100.0f;
       ballfd.restitution = 0.0f;
-      b2BodyDef ballbd;
+      //b2BodyDef ballbd;
       ballbd.type = b2_dynamicBody;
       ballbd.position.Set(-20.0f, 8.0f);
       sbody = m_world->CreateBody(&ballbd);
@@ -151,7 +206,7 @@ namespace cs296
       b2CircleShape circle1;
       circle1.m_radius = 3.0;
 	
-      b2FixtureDef ballfd1;
+     b2FixtureDef ballfd1;
       //ballfd1.filter.groupIndex = -2;
       ballfd1.filter.categoryBits = 0x0002;
       ballfd1.filter.maskBits = 0x0004;
@@ -167,7 +222,23 @@ namespace cs296
       sbody1->CreateFixture(&ballfd1);
       //sbody1->SetAngularVelocity(1.2f);
       //sbody->SetAngularVelocity(1.0f);
-      
+      b2Body* sbody3;
+      b2CircleShape circle3;
+      circle3.m_radius = 0.5;
+	
+      b2FixtureDef ballfdc3;
+      //ballfd.filter.groupIndex = -2;
+      ballfdc3.filter.categoryBits = 0x0002;
+      ballfdc3.filter.maskBits = 0x0004;
+      ballfdc3.shape = &circle3;
+      ballfdc3.density = 5.0f;
+      ballfdc3.friction = 100.0f;
+      ballfdc3.restitution = 0.0f;
+      b2BodyDef ballbdc3;
+      ballbdc3.type = b2_dynamicBody;
+      ballbdc3.position.Set(-20.0f+(4.5*cosf(b2_pi/4)), 8.0f+(4.5*sinf(-b2_pi/4)));
+      sbody3 = m_world->CreateBody(&ballbdc3);
+      sbody3->CreateFixture(&ballfdc3);
       b2Body* b2;
       b2FixtureDef ballfd2;
       //ballfd2.filter.groupIndex = -2;
@@ -183,12 +254,18 @@ namespace cs296
 	//sb2->CreateFixture(&ballfd2);
 	b2RevoluteJointDef jointDef;
 	jointDef.Initialize(sbody, rodbody, sbody->GetWorldCenter());
+		 //jointDef.maxMotorTorque =25.0f;
+   //jointDef.motorSpeed = 0.0f;
+    //jointDef.enableMotor = true;
 		m_world->CreateJoint(&jointDef);
 
 
 	b2RevoluteJointDef jointDef1;
 	jointDef1.Initialize(sbody1, rodbody, sbody1->GetWorldCenter());
 m_world->CreateJoint(&jointDef1);
+b2RevoluteJointDef jointDefc3;
+	jointDefc3.Initialize(sbody3, rodbody, sbody3->GetWorldCenter());
+m_world->CreateJoint(&jointDefc3);
 b2Vec2 vs[44];
 b2Body* conveyer[44];
 
@@ -211,6 +288,22 @@ b2Body* conveyer[44];
 	conveyer[i] = m_world->CreateBody(&bd4);
 	conveyer[i]->CreateFixture(&ballfd4);
 	}
+	/*b2Body* b8;
+	b2FixtureDef ballfd4;
+		
+    ballfd4.filter.categoryBits = 0x0004;
+      ballfd4.filter.maskBits = 0x0002;//ballfd4.filter.groupIndex = -1;
+    //ballfd2.filter.groupIndex = -2;
+	b2PolygonShape shape8;
+	shape8.SetAsBox(.25f, 0.5f);
+	ballfd4.shape = &shape8;  
+		ballfd4.density=5.1f;
+	ballfd.friction=100.0f;
+	b2BodyDef bd4;
+	//bd4.type = b2_dynamicBody;
+	bd4.position.Set(25.0f,0.125f);
+	b8 = m_world->CreateBody(&bd4);
+	b8->CreateFixture(&ballfd4);*/
  for (int i = 0; i < 6; ++i)
 	{
 		vs[16+i].Set(-5.0f,11.0f-i*1.0f);
@@ -339,7 +432,7 @@ b2RevoluteJointDef jointDef3;
 	jointDef7.Initialize(b5, b7, b7->GetWorldCenter());//,sbody1->GetWorldCenter());//,sbody1->GetWorldCenter());
 	m_world->CreateJoint(&jointDef7);
 	//weld joining gear1 to wheel1
-	b2WeldJointDef jointDef8;
+	//b2WeldJointDef jointDef8;
 	jointDef8.Initialize(sbody, wheel1, sbody->GetWorldCenter());//,sbody1->GetWorldCenter());//,sbody1->GetWorldCenter());
 	m_world->CreateJoint(&jointDef8);
 }
