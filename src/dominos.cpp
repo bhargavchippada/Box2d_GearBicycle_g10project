@@ -23,7 +23,7 @@ namespace cs296
 	{
 	  switch(key){
 		case('w'):
-		frontgear->ApplyAngularImpulse( -100,0 );
+		frontgear->ApplyAngularImpulse( -200,0 );
 		break;
 		case('s'):
 		wheel1->ApplyAngularImpulse( 100,0 );
@@ -41,6 +41,7 @@ dominos_t::dominos_t()
 	  b2FixtureDef *grnd = new b2FixtureDef;
 	  grnd->filter.groupIndex = -5;//
 	  grnd->shape=&shape;
+	  grnd->friction=1;
 	  b2BodyDef bd;
 	  b2Body* b1=m_world->CreateBody(&bd); 
 	  b1->CreateFixture(grnd);
@@ -116,8 +117,39 @@ dominos_t::dominos_t()
 	 b2PolygonShape polygon;
 	 boxshape.Set(vertices, 5);
 	 seatbody->CreateFixture(fd1);
-	 
-	 
+//////////////////////////////////////////////////////////////////////////////
+	///Creating the thighs of man on seat
+	b2FixtureDef thighfd;
+	b2PolygonShape thighshape;
+	thighfd.filter.groupIndex = -1;
+	thighfd.density=0.02f;  
+	thighshape.SetAsBox(1.0f,6.0f,b2Vec2(6*cosf(b2_pi/2-b2_pi/4),-6*sinf(b2_pi/2-b2_pi/4)),b2_pi/4);
+    thighfd.shape = &thighshape;
+	b2BodyDef thighDef;
+	thighDef.type = b2_dynamicBody;
+	thighDef.position.Set(seatbody->GetPosition().x,seatbody->GetPosition().y+2.0f);
+	///Creating thigh1
+	b2Body* thighbody1 = m_world->CreateBody(&thighDef);
+	thighbody1->CreateFixture(&thighfd);
+	///Adding Revolute Joints between thigh1 and seat
+	b2RevoluteJointDef jointDef_thigh1;
+	//jointDef_thigh1.enableMotor=true;
+	b2Vec2 seattopvec;
+	seattopvec.Set(seatbody->GetPosition().x,seatbody->GetPosition().y+2.0f);
+	jointDef_thigh1.Initialize(thighbody1, seatbody, seattopvec);
+	m_world->CreateJoint(&jointDef_thigh1);
+	
+	///creating thigh2
+	thighshape.SetAsBox(6.0f,1.0f,b2Vec2(6*cosf(0),6*sinf(0)),0);
+	b2Body* thighbody2 = m_world->CreateBody(&thighDef);
+	thighbody2->CreateFixture(&thighfd);
+
+	///Adding Revolute Joints between thigh1 and seat
+	b2RevoluteJointDef jointDef_thigh2;
+	//jointDef_thigh2.enableMotor=true;
+	seattopvec.Set(seatbody->GetPosition().x+0.5f,seatbody->GetPosition().y+2.0f);
+	jointDef_thigh2.Initialize(thighbody2, seatbody, seattopvec);
+	m_world->CreateJoint(&jointDef_thigh2);
 //////////////////////////////////////////////////////////////////////////////        
 	 ///Adding Rovolute Joints between tires and cycle frame
 	 b2RevoluteJointDef revoluteJointDef;
@@ -151,7 +183,7 @@ dominos_t::dominos_t()
 	gearbd.position.Set(-6.0f, 8.0f);
 	frontgear = m_world->CreateBody(&gearbd);
 	frontgear->CreateFixture(&gearfd);
-      
+    //frontgear->ApplyAngularImpulse( -200,0 );
 ////////////////////////////////////////////////////////////////////////////// 
 	///Adding Revolute joints between gears and cycle frame
 	b2RevoluteJointDef jointDef1;
@@ -272,7 +304,7 @@ dominos_t::dominos_t()
 	b2FixtureDef legfd;
 	b2PolygonShape legshape;
 	legfd.filter.groupIndex = -1;
-	legfd.density=0.1f;  
+	legfd.density=0.02f;  
 	legshape.SetAsBox(1.0f,8.0f);
 	legfd.shape = &legshape;
 	b2BodyDef legDef;
@@ -287,16 +319,29 @@ dominos_t::dominos_t()
 	jointleg1Def.Initialize(legbody1, pedal1, pedal1->GetWorldCenter());
 	m_world->CreateJoint(&jointleg1Def);
 	
-	legDef.position.Set(-6.0f, 20.0f);
+	legDef.position.Set(-6.0f, 12.0f);
+	legshape.SetAsBox(1.0f,8.0f,b2Vec2(8*cosf(b2_pi/2-b2_pi/15),8*sinf(b2_pi/2-b2_pi/15)),-b2_pi/15);
 	b2Body* legbody2 = m_world->CreateBody(&legDef);
 	legbody2->CreateFixture(&legfd);
 	
-	///welding behind leg1 to pedal1
+	///welding behind leg2 to pedal2
 	b2WeldJointDef jointleg2Def;
 	jointleg2Def.Initialize(legbody2, pedal2, pedal2->GetWorldCenter());
 	m_world->CreateJoint(&jointleg2Def);
 //////////////////////////////////////////////////////////////////////////////
+	///RevoluteJoint between thigh1 and leg1
+	b2RevoluteJointDef jointDef_thleg1;
+	b2Vec2 kneepos1;
+	kneepos1.Set(legbody1->GetWorldCenter().x,legbody1->GetWorldCenter().y+7.0f);
+	jointDef_thleg1.Initialize(thighbody1, legbody1, kneepos1);
+	m_world->CreateJoint(&jointDef_thleg1);
 	
+	///RevoluteJoint between thigh2 and leg2
+	b2RevoluteJointDef jointDef_thleg2;
+	b2Vec2 kneepos2;
+	kneepos2.Set(legbody2->GetWorldCenter().x+7.0f*cosf(b2_pi/2-b2_pi/15),legbody2->GetWorldCenter().y+7.0f*sinf(b2_pi/2-b2_pi/15));
+	jointDef_thleg2.Initialize(thighbody2, legbody2, kneepos2);
+	m_world->CreateJoint(&jointDef_thleg2);
 //////////////////////////////////////////////////////////////////////////////
 	///welding behind gear to behind tire
 	b2WeldJointDef jointDef7;
