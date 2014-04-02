@@ -10,7 +10,6 @@ It's a group project for the course code named CS296: Software Systems Lab Under
  - [Bhargav Chippada](https://github.com/bhargavchippada)
  - [Prateesh Goyal](https://github.com/prateeshgoyal)
 
-
 ##Steps
 
 1. Download all the files in the github project (click on "Download Zip" button). Extract it.
