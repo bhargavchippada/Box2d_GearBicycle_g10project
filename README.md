@@ -31,7 +31,7 @@ It's a group project for the course code named CS296: Software Systems Lab Under
 ###License
 
 1. This is an open source Box2d project. Read the Box2d License on www.box2d.org
-2. This project is licensed under [MIT license.]https://github.com/bhargavchippada/g10_project/edit/master/LICENSE.txt) 
+2. This project is licensed under [MIT license.](https://github.com/bhargavchippada/g10_project/blob/master/LICENSE.txt) 
 
 ###Contact
 
