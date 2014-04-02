@@ -26,8 +26,8 @@ namespace cs296
 		frontgear->ApplyAngularImpulse( -100,0 );
 		break;
 		case('s'):
-		wheel1->ApplyAngularImpulse( 100,0 );
-		wheel2->ApplyAngularImpulse( 100,0 );
+		wheel1->ApplyAngularImpulse( 50,0 );
+		wheel2->ApplyAngularImpulse( 50,0 );
 		break;
 	}
 	}
@@ -82,24 +82,30 @@ dominos_t::dominos_t()
 	 fd1->shape = &boxshape;
 	 b2BodyDef* rodDef=new b2BodyDef;
 	 rodDef->type= b2_dynamicBody;
-	 
+	 ///0* rod between gears
 	 rodDef->position.Set(wheel1->GetWorldCenter().x, wheel1->GetWorldCenter().y);
 	 b2Body* rodbody=m_world->CreateBody(rodDef);
 	 rodbody->CreateFixture(fd1);
-	 
+	 ///60* back wheel rod
 	 boxshape.SetAsBox(8,0.6,b2Vec2(8*cosf(b2_pi/3),8*sinf(b2_pi/3)),b2_pi/3);
 	 rodbody->CreateFixture(fd1);
-	 
+	 ///-60* front wheel rod
 	 boxshape.SetAsBox(8,0.6,b2Vec2(30-8*cosf(b2_pi/3),8*sinf(b2_pi/3)),-b2_pi/3);
 	 rodbody->CreateFixture(fd1);
-	 
+	 ///0* Top cycle rod
 	 boxshape.SetAsBox(7,0.6,b2Vec2(15,16*sinf(b2_pi/3)),0);
 	 rodbody->CreateFixture(fd1);
-	 
+	 ///60* front cycle rod
 	 boxshape.SetAsBox(8,0.6,b2Vec2(14+8*cosf(b2_pi/3),8*sinf(b2_pi/3)),b2_pi/3);
 	 rodbody->CreateFixture(fd1);
-	 
+	 ///seat rod
 	 boxshape.SetAsBox(1.5,0.4,b2Vec2((16-1.5)*cosf(b2_pi/3),(16+1.5)*sinf(b2_pi/3)),-b2_pi/3);
+	 rodbody->CreateFixture(fd1);
+	 ///-60* front cycle small handle
+	 boxshape.SetAsBox(1.5,0.6,b2Vec2(22-1.5f*cosf(b2_pi/3),(16+1.5)*sinf(b2_pi/3)),-b2_pi/3);
+	 rodbody->CreateFixture(fd1);
+	 ///60* front cycle small handle
+	 boxshape.SetAsBox(2.5,0.5,b2Vec2(22-3*cosf(b2_pi/3)+2.0*cosf(b2_pi/4),(16+3)*sinf(b2_pi/3)+2.0*sinf(b2_pi/4)),b2_pi/4);
 	 rodbody->CreateFixture(fd1);
 //////////////////////////////////////////////////////////////////////////////
 	 /// seat on cycle
@@ -118,6 +124,24 @@ dominos_t::dominos_t()
 	 boxshape.Set(vertices, 5);
 	 seatbody->CreateFixture(fd1);
 //////////////////////////////////////////////////////////////////////////////
+     ///handles on cycle
+	 b2BodyDef* handleDef=new b2BodyDef;
+	 handleDef->type= b2_dynamicBody;
+	 handleDef->fixedRotation=true;
+	 handleDef->position.Set(wheel1->GetWorldCenter().x+22-3*cosf(b2_pi/3)+4.5*cosf(b2_pi/4), wheel1->GetWorldCenter().y+(16+3)*sinf(b2_pi/3)+4.5*sinf(b2_pi/4));
+	 b2Body* handlebody=m_world->CreateBody(handleDef);
+	 
+	 fd1->shape = new b2CircleShape;
+	 b2CircleShape handlecircle;
+	 handlecircle.m_radius = 1.0;
+	 fd1->shape=&handlecircle;
+	 handlebody->CreateFixture(fd1);
+	 
+	 ///Adding Revolute Joints between thigh1 and seat
+	 b2WeldJointDef jointDef_handle;
+	 jointDef_handle.Initialize(handlebody, rodbody, handlebody->GetWorldCenter());
+	 m_world->CreateJoint(&jointDef_handle);
+//////////////////////////////////////////////////////////////////////////////
 	///Creating the thighs of man on seat
 	b2FixtureDef thighfd;
 	b2PolygonShape thighshape;
@@ -133,7 +157,6 @@ dominos_t::dominos_t()
 	thighbody1->CreateFixture(&thighfd);
 	///Adding Revolute Joints between thigh1 and seat
 	b2RevoluteJointDef jointDef_thigh1;
-	//jointDef_thigh1.enableMotor=true;
 	b2Vec2 seattopvec;
 	seattopvec.Set(seatbody->GetPosition().x,seatbody->GetPosition().y+2.0f);
 	jointDef_thigh1.Initialize(thighbody1, seatbody, seattopvec);
@@ -146,7 +169,6 @@ dominos_t::dominos_t()
 
 	///Adding Revolute Joints between thigh1 and seat
 	b2RevoluteJointDef jointDef_thigh2;
-	//jointDef_thigh2.enableMotor=true;
 	seattopvec.Set(seatbody->GetPosition().x+0.5f,seatbody->GetPosition().y+2.0f);
 	jointDef_thigh2.Initialize(thighbody2, seatbody, seattopvec);
 	m_world->CreateJoint(&jointDef_thigh2);
