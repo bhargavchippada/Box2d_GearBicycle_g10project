@@ -23,11 +23,11 @@ namespace cs296
 	{
 	  switch(key){
 		case('w'):
-		frontgear->ApplyAngularImpulse( -100,0 );
+		frontgear->ApplyAngularImpulse( -400,0 );
 		break;
 		case('s'):
-		wheel1->ApplyAngularImpulse( 50,0 );
-		wheel2->ApplyAngularImpulse( 50,0 );
+		wheel1->ApplyAngularImpulse( 200,0 );
+		wheel2->ApplyAngularImpulse( 200,0 );
 		break;
 	}
 	}
@@ -37,7 +37,7 @@ dominos_t::dominos_t()
 	///Ground
 	{
 	  b2EdgeShape shape; 
-	  shape.Set(b2Vec2(-90.0f, 0.0f), b2Vec2(90.0f, 0.0f)); 
+	  shape.Set(b2Vec2(-90.0f, -3.0f), b2Vec2(90.0f, -3.0f)); 
 	  b2FixtureDef *grnd = new b2FixtureDef;
 	  grnd->filter.groupIndex = -5;//
 	  grnd->shape=&shape;
@@ -45,14 +45,19 @@ dominos_t::dominos_t()
 	  b2BodyDef bd;
 	  b2Body* b1=m_world->CreateBody(&bd); 
 	  b1->CreateFixture(grnd);
+	  
+	  b2PolygonShape shape1;
+	  shape1.SetAsBox(1,4,b2Vec2(50,0),0); 
+	  grnd->shape=&shape1;
+	  b1->CreateFixture(grnd);
 	}
 //////////////////////////////////////////////////////////////////////////////
 	 ///Add wheels
 	 b2CircleShape circleDef;
 	 circleDef.m_radius = 8;
 	 b2FixtureDef *fd2 = new b2FixtureDef;
-	 fd2->density = 0.1f;
-	 fd2->friction = 5;
+	 fd2->density = 2.0f;
+	 fd2->friction = 1;
 	 fd2->restitution = 0.2;
 	 fd2->filter.groupIndex = -1;//
 	 fd2->shape=new b2CircleShape;
@@ -74,7 +79,7 @@ dominos_t::dominos_t()
 	 b2PolygonShape boxshape;
 	 boxshape.SetAsBox(7,0.6,b2Vec2(7,0),0);
 	 b2FixtureDef *fd1 = new b2FixtureDef;
-	 fd1->density = 2.0f;
+	 fd1->density = 1.5f;
 	 fd1->friction = 0.5f;
 	 fd1->restitution = 0.2f;
 	 fd1->filter.groupIndex = -1;//
@@ -107,6 +112,16 @@ dominos_t::dominos_t()
 	 ///60* front cycle small handle
 	 boxshape.SetAsBox(2.5,0.5,b2Vec2(22-3*cosf(b2_pi/3)+2.0*cosf(b2_pi/4),(16+3)*sinf(b2_pi/3)+2.0*sinf(b2_pi/4)),b2_pi/4);
 	 rodbody->CreateFixture(fd1);
+//////////////////////////////////////////////////////////////////////////////        
+	 ///Adding Rovolute Joints between tires and cycle frame
+	 b2RevoluteJointDef revoluteJointDef;
+	 revoluteJointDef.enableMotor = true;
+	 
+	 revoluteJointDef.Initialize(rodbody, wheel1, wheel1->GetWorldCenter());
+	 m_world->CreateJoint(&revoluteJointDef);
+	 
+	 revoluteJointDef.Initialize(rodbody, wheel2, wheel2->GetWorldCenter());
+	 m_world->CreateJoint(&revoluteJointDef);
 //////////////////////////////////////////////////////////////////////////////
 	 /// seat on cycle
 	 b2BodyDef* seatDef=new b2BodyDef;
@@ -146,7 +161,7 @@ dominos_t::dominos_t()
 	b2FixtureDef thighfd;
 	b2PolygonShape thighshape;
 	thighfd.filter.groupIndex = -1;
-	thighfd.density=0.02f;  
+	thighfd.density=1.0f;  
 	thighshape.SetAsBox(1.0f,6.0f,b2Vec2(6*cosf(b2_pi/2-b2_pi/4),-6*sinf(b2_pi/2-b2_pi/4)),b2_pi/4);
     thighfd.shape = &thighshape;
 	b2BodyDef thighDef;
@@ -177,7 +192,7 @@ dominos_t::dominos_t()
 	b2FixtureDef ubodyfd;
 	b2PolygonShape ubodyshape;
 	ubodyfd.filter.groupIndex = -1;
-	ubodyfd.density=0.02f;  
+	ubodyfd.density=1.0f;  
 	b2Vec2 ubodypts[6];
 	ubodypts[0].Set(-2.0f, -0.2f);
 	ubodypts[1].Set(-4.0f, 6.0f);
@@ -193,25 +208,41 @@ dominos_t::dominos_t()
 	///Creating upperbody
 	b2Body* ubody1 = m_world->CreateBody(&ubodyDef);
 	ubody1->CreateFixture(&ubodyfd);
+	
 	///Adding Revolute Joints between ubody1 and seat
 	b2RevoluteJointDef jointDef_ubody1;
 	jointDef_ubody1.Initialize(ubody1, seatbody, ubody1->GetPosition());
+	jointDef_ubody1.lowerAngle = -0.125f * b2_pi; // -90 degrees
+    jointDef_ubody1.upperAngle = 0.125f * b2_pi; // 45 degrees
+    jointDef_ubody1.enableLimit = true;
 	m_world->CreateJoint(&jointDef_ubody1);
+	
+	/*
 	///Distance Joint behind ubody1 and seat
 	b2DistanceJointDef jointDef_ubdseat;
-	jointDef_ubdseat.Initialize(ubody1,handlebody,ubody1->GetWorldCenter(),handlebody->GetWorldCenter());
+	jointDef_ubdseat.Initialize(ubody1,seatbody,ubody1->GetWorldCenter(),seatbody->GetWorldCenter());
 	m_world->CreateJoint(&jointDef_ubdseat);
-//////////////////////////////////////////////////////////////////////////////        
-	 ///Adding Rovolute Joints between tires and cycle frame
-	 b2RevoluteJointDef revoluteJointDef;
-	 revoluteJointDef.enableMotor = true;
-	 
-	 revoluteJointDef.Initialize(rodbody, wheel1, wheel1->GetWorldCenter());
-	 m_world->CreateJoint(&revoluteJointDef);
-	 
-	 revoluteJointDef.Initialize(rodbody, wheel2, wheel2->GetWorldCenter());
-	 m_world->CreateJoint(&revoluteJointDef);
+	jointDef_ubdseat.frequencyHz = 20.0f;
+	jointDef_ubdseat.dampingRatio = 0.1f;
+	*/
 
+	///Distance Joint behind ubody1 and handle
+	b2DistanceJointDef jointDef_ubdhandle;
+	jointDef_ubdhandle.Initialize(ubody1,handlebody,ubody1->GetWorldCenter(),handlebody->GetWorldCenter());
+	jointDef_ubdhandle.frequencyHz = 2.5f;
+	jointDef_ubdhandle.dampingRatio = 0.4f;
+	m_world->CreateJoint(&jointDef_ubdhandle);
+	
+	/*
+	b2PrismaticJointDef jointDef_ubdhand;
+	jointDef_ubdhand.Initialize(ubody1,handlebody,ubody1->GetWorldCenter(),handlebody->GetWorldCenter());
+	jointDef_ubdhand.lowerTranslation = -5.0f;
+	jointDef_ubdhand.upperTranslation = 2.5f;
+	jointDef_ubdhand.enableLimit = true;
+	jointDef_ubdhand.maxMotorForce = 1.0f;
+	jointDef_ubdhand.motorSpeed = 0.0f;
+	jointDef_ubdhand.enableMotor = true;
+	*/
 //////////////////////////////////////////////////////////////////////////////         
 	///back gear
 	b2CircleShape gearshape;
@@ -222,7 +253,7 @@ dominos_t::dominos_t()
 	gearfd.filter.maskBits = 0x0004;//
 	gearfd.shape = &gearshape;
 	gearfd.density = 1.0f;
-	gearfd.friction = 100.0f;
+	gearfd.friction = 1.0f;
 	gearfd.restitution = 0.0f;
 	b2BodyDef gearbd;
 	gearbd.type = b2_dynamicBody;
@@ -255,7 +286,7 @@ dominos_t::dominos_t()
 	b2PolygonShape chainshape;
 	chainshape.SetAsBox(0.5f, 0.25f);
 	chainfd.shape = &chainshape;
-	chainfd.density=1.0f;
+	chainfd.density=5.0f;
 	chainfd.friction=1.0f;
 	b2BodyDef chainDef;
 	chainDef.type = b2_dynamicBody;
@@ -356,7 +387,7 @@ dominos_t::dominos_t()
 	b2FixtureDef legfd;
 	b2PolygonShape legshape;
 	legfd.filter.groupIndex = -1;
-	legfd.density=0.02f;  
+	legfd.density=1.0f;  
 	legshape.SetAsBox(1.0f,8.0f);
 	legfd.shape = &legshape;
 	b2BodyDef legDef;
