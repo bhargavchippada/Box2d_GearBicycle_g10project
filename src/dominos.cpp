@@ -161,7 +161,7 @@ dominos_t::dominos_t()
 	b2FixtureDef thighfd;
 	b2PolygonShape thighshape;
 	thighfd.filter.groupIndex = -1;
-	thighfd.density=1.0f;  
+	thighfd.density=0.1f;  
 	thighshape.SetAsBox(1.0f,6.0f,b2Vec2(6*cosf(b2_pi/2-b2_pi/4),-6*sinf(b2_pi/2-b2_pi/4)),b2_pi/4);
     thighfd.shape = &thighshape;
 	b2BodyDef thighDef;
@@ -212,19 +212,10 @@ dominos_t::dominos_t()
 	///Adding Revolute Joints between ubody1 and seat
 	b2RevoluteJointDef jointDef_ubody1;
 	jointDef_ubody1.Initialize(ubody1, seatbody, ubody1->GetPosition());
-	jointDef_ubody1.lowerAngle = -0.125f * b2_pi; // -90 degrees
+	jointDef_ubody1.lowerAngle =-0.02*b2_pi; // -90 degrees
     jointDef_ubody1.upperAngle = 0.125f * b2_pi; // 45 degrees
     jointDef_ubody1.enableLimit = true;
 	m_world->CreateJoint(&jointDef_ubody1);
-	
-	/*
-	///Distance Joint behind ubody1 and seat
-	b2DistanceJointDef jointDef_ubdseat;
-	jointDef_ubdseat.Initialize(ubody1,seatbody,ubody1->GetWorldCenter(),seatbody->GetWorldCenter());
-	m_world->CreateJoint(&jointDef_ubdseat);
-	jointDef_ubdseat.frequencyHz = 20.0f;
-	jointDef_ubdseat.dampingRatio = 0.1f;
-	*/
 
 	///Distance Joint behind ubody1 and handle
 	b2DistanceJointDef jointDef_ubdhandle;
@@ -232,18 +223,49 @@ dominos_t::dominos_t()
 	jointDef_ubdhandle.frequencyHz = 2.5f;
 	jointDef_ubdhandle.dampingRatio = 0.4f;
 	m_world->CreateJoint(&jointDef_ubdhandle);
+//////////////////////////////////////////////////////////////////////////////  
+	///Adding hands to upper body
+	b2FixtureDef handfd;
+	b2PolygonShape handshape;
+	handfd.filter.groupIndex = -1;
+	handfd.density=0.1f;  
+	handshape.SetAsBox(5.0f,1.0f,b2Vec2(5*cosf(b2_pi/3),-5*sinf(b2_pi/3)),-b2_pi/3	);
+	handfd.shape = &handshape;
+	b2BodyDef handDef;
+	handDef.type = b2_dynamicBody;
+	handDef.position.Set(ubody1->GetPosition().x+4.0f,ubody1->GetPosition().y+12.0f);
 	
-	/*
-	b2PrismaticJointDef jointDef_ubdhand;
-	jointDef_ubdhand.Initialize(ubody1,handlebody,ubody1->GetWorldCenter(),handlebody->GetWorldCenter());
-	jointDef_ubdhand.lowerTranslation = -5.0f;
-	jointDef_ubdhand.upperTranslation = 2.5f;
-	jointDef_ubdhand.enableLimit = true;
-	jointDef_ubdhand.maxMotorForce = 1.0f;
-	jointDef_ubdhand.motorSpeed = 0.0f;
-	jointDef_ubdhand.enableMotor = true;
-	*/
-//////////////////////////////////////////////////////////////////////////////         
+	///Creating hand1 (shoulder arm)
+	b2Body* handbody1 = m_world->CreateBody(&handDef);
+	handbody1->CreateFixture(&handfd);
+	
+	///Adding Revolute joint between upper body (ubody1) and handbody1
+	b2RevoluteJointDef jointhand1Def;
+	b2Vec2 handpos1;
+	handpos1.Set(ubody1->GetPosition().x+4.0f,ubody1->GetPosition().y+12.0f);
+	jointhand1Def.Initialize(handbody1, ubody1,handpos1);
+	m_world->CreateJoint(&jointhand1Def);
+	
+	///Creating hand2 (hand arm)
+	handDef.position.Set(handlebody->GetWorldCenter().x,handlebody->GetWorldCenter().y);
+	handshape.SetAsBox(5.0f,1.0f,b2Vec2(-5*cosf(b2_pi/12),5*sinf(b2_pi/12)),-b2_pi/12);
+	b2Body* handbody2 = m_world->CreateBody(&handDef);
+	handbody2->CreateFixture(&handfd);
+	
+	///Adding Revolute joint between upper body (ubody1) and handbody2
+	b2RevoluteJointDef jointhand2Def;
+	b2Vec2 handpos2;
+	handpos2.Set(handlebody->GetWorldCenter().x,handlebody->GetWorldCenter().y);
+	jointhand2Def.Initialize(handbody2, handlebody,handpos2);
+	m_world->CreateJoint(&jointhand2Def);
+	
+	///Adding Revolute joint between handbody1 and handbody2
+	b2RevoluteJointDef jointDef_hands;
+	b2Vec2 hands_pos;
+	hands_pos.Set(handbody1->GetWorldCenter().x+4*cosf(b2_pi/3),handbody1->GetWorldCenter().y-4*sinf(b2_pi/3));
+	jointDef_hands.Initialize(handbody1, handbody2,hands_pos);
+	m_world->CreateJoint(&jointDef_hands);
+//////////////////////////////////////////////////////////////////////////////        
 	///back gear
 	b2CircleShape gearshape;
 	gearshape.m_radius = 3.0;
@@ -265,7 +287,6 @@ dominos_t::dominos_t()
 	gearbd.position.Set(-6.0f, 8.0f);
 	frontgear = m_world->CreateBody(&gearbd);
 	frontgear->CreateFixture(&gearfd);
-    //frontgear->ApplyAngularImpulse(-200,0);
 ////////////////////////////////////////////////////////////////////////////// 
 	///Adding Revolute joints between gears and cycle frame
 	b2RevoluteJointDef jointDef1;
@@ -387,7 +408,7 @@ dominos_t::dominos_t()
 	b2FixtureDef legfd;
 	b2PolygonShape legshape;
 	legfd.filter.groupIndex = -1;
-	legfd.density=1.0f;  
+	legfd.density=0.1f;  
 	legshape.SetAsBox(1.0f,8.0f);
 	legfd.shape = &legshape;
 	b2BodyDef legDef;
