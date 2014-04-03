@@ -119,7 +119,7 @@ dominos_t::dominos_t()
 	 vertices[1].Set(4.0f, 2.0f);
 	 vertices[2].Set(4.0f, 1.0f);
 	 vertices[3].Set(0.0f, -0.1f);
-	 vertices[3].Set(-2.0f, -0.1f);
+	 vertices[4].Set(-2.0f, -0.1f);
 	 b2PolygonShape polygon;
 	 boxshape.Set(vertices, 5);
 	 seatbody->CreateFixture(fd1);
@@ -172,6 +172,35 @@ dominos_t::dominos_t()
 	seattopvec.Set(seatbody->GetPosition().x+0.5f,seatbody->GetPosition().y+2.0f);
 	jointDef_thigh2.Initialize(thighbody2, seatbody, seattopvec);
 	m_world->CreateJoint(&jointDef_thigh2);
+////////////////////////////////////////////////////////////////////////////// 
+	///Creating upper body of the man
+	b2FixtureDef ubodyfd;
+	b2PolygonShape ubodyshape;
+	ubodyfd.filter.groupIndex = -1;
+	ubodyfd.density=0.02f;  
+	b2Vec2 ubodypts[6];
+	ubodypts[0].Set(-2.0f, -0.2f);
+	ubodypts[1].Set(-4.0f, 6.0f);
+	ubodypts[2].Set(1.0f, 15.0f);
+	ubodypts[3].Set(6.0f, 14.0f);
+	ubodypts[4].Set(6.0f, 6.0f);
+	ubodypts[5].Set(3.0f,-0.2f);
+	ubodyshape.Set(ubodypts, 6);
+	ubodyfd.shape=&ubodyshape;
+	b2BodyDef ubodyDef;
+	ubodyDef.type = b2_dynamicBody;
+	ubodyDef.position.Set(seatbody->GetPosition().x,seatbody->GetPosition().y+1.5f);
+	///Creating upperbody
+	b2Body* ubody1 = m_world->CreateBody(&ubodyDef);
+	ubody1->CreateFixture(&ubodyfd);
+	///Adding Revolute Joints between ubody1 and seat
+	b2RevoluteJointDef jointDef_ubody1;
+	jointDef_ubody1.Initialize(ubody1, seatbody, ubody1->GetPosition());
+	m_world->CreateJoint(&jointDef_ubody1);
+	///Distance Joint behind ubody1 and seat
+	b2DistanceJointDef jointDef_ubdseat;
+	jointDef_ubdseat.Initialize(ubody1,handlebody,ubody1->GetWorldCenter(),handlebody->GetWorldCenter());
+	m_world->CreateJoint(&jointDef_ubdseat);
 //////////////////////////////////////////////////////////////////////////////        
 	 ///Adding Rovolute Joints between tires and cycle frame
 	 b2RevoluteJointDef revoluteJointDef;
@@ -227,6 +256,7 @@ dominos_t::dominos_t()
 	chainshape.SetAsBox(0.5f, 0.25f);
 	chainfd.shape = &chainshape;
 	chainfd.density=1.0f;
+	chainfd.friction=1.0f;
 	b2BodyDef chainDef;
 	chainDef.type = b2_dynamicBody;
 	
