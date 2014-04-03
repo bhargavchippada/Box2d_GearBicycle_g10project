@@ -195,8 +195,8 @@ dominos_t::dominos_t()
 	ubodyfd.density=1.0f;  
 	b2Vec2 ubodypts[6];
 	ubodypts[0].Set(-2.0f, -0.2f);
-	ubodypts[1].Set(-4.0f, 6.0f);
-	ubodypts[2].Set(1.0f, 15.0f);
+	ubodypts[1].Set(-3.0f, 6.0f);
+	ubodypts[2].Set(2.0f, 15.0f);
 	ubodypts[3].Set(6.0f, 14.0f);
 	ubodypts[4].Set(6.0f, 6.0f);
 	ubodypts[5].Set(3.0f,-0.2f);
@@ -212,8 +212,8 @@ dominos_t::dominos_t()
 	///Adding Revolute Joints between ubody1 and seat
 	b2RevoluteJointDef jointDef_ubody1;
 	jointDef_ubody1.Initialize(ubody1, seatbody, ubody1->GetPosition());
-	jointDef_ubody1.lowerAngle =-0.02*b2_pi; // -90 degrees
-    jointDef_ubody1.upperAngle = 0.125f * b2_pi; // 45 degrees
+	jointDef_ubody1.lowerAngle =-0.02*b2_pi;
+    jointDef_ubody1.upperAngle = 0.125f * b2_pi;
     jointDef_ubody1.enableLimit = true;
 	m_world->CreateJoint(&jointDef_ubody1);
 
@@ -223,6 +223,32 @@ dominos_t::dominos_t()
 	jointDef_ubdhandle.frequencyHz = 2.5f;
 	jointDef_ubdhandle.dampingRatio = 0.4f;
 	m_world->CreateJoint(&jointDef_ubdhandle);
+	ubodyDef.position.Set(seatbody->GetPosition().x,seatbody->GetPosition().y+1.5f);
+//////////////////////////////////////////////////////////////////////////////  
+	///Adding head to upper body
+	ubodyfd.shape = new b2CircleShape;
+	b2CircleShape headcircle;
+	headcircle.m_radius = 2.5;
+	ubodyfd.shape=&headcircle;
+	///Creating head of man
+	ubodyDef.position.Set(ubody1->GetPosition().x+3.5+0.5,ubody1->GetPosition().y+14.5f+2.5);
+	b2Body* uhead = m_world->CreateBody(&ubodyDef);
+	uhead->CreateFixture(&ubodyfd);
+	///Adding Revolute Joints between head and ubody1
+	b2RevoluteJointDef jointDef_uhead;
+	jointDef_uhead.Initialize(uhead, ubody1, b2Vec2(ubody1->GetPosition().x+3.5,ubody1->GetPosition().y+14.5f));
+	jointDef_uhead.lowerAngle =-0.02*b2_pi;
+    jointDef_uhead.upperAngle = 0.125f * b2_pi;
+    jointDef_uhead.enableLimit = true;
+	m_world->CreateJoint(&jointDef_uhead);
+	///Distance Joint behind ubody1 and handle
+	b2DistanceJointDef jointDef_ubdhead;
+	b2Vec2 disthead;
+	disthead.Set(ubody1->GetWorldCenter().x+6,ubody1->GetWorldCenter().y+4);
+	jointDef_ubdhead.Initialize(uhead,ubody1,uhead->GetWorldCenter(),disthead);
+	jointDef_ubdhead.frequencyHz = 1.0f;
+	jointDef_ubdhead.dampingRatio = 0.4f;
+	m_world->CreateJoint(&jointDef_ubdhead);
 //////////////////////////////////////////////////////////////////////////////  
 	///Adding hands to upper body
 	b2FixtureDef handfd;
@@ -239,6 +265,10 @@ dominos_t::dominos_t()
 	b2Body* handbody1 = m_world->CreateBody(&handDef);
 	handbody1->CreateFixture(&handfd);
 	
+	///Creating 2nd optional hand11 (shoulder arm)
+	handDef.position.Set(ubody1->GetPosition().x+4.0f+1.0f,ubody1->GetPosition().y+12.0f+0.5f);
+	b2Body* handbody11 = m_world->CreateBody(&handDef);
+	handbody11->CreateFixture(&handfd);
 	///Adding Revolute joint between upper body (ubody1) and handbody1
 	b2RevoluteJointDef jointhand1Def;
 	b2Vec2 handpos1;
@@ -246,12 +276,21 @@ dominos_t::dominos_t()
 	jointhand1Def.Initialize(handbody1, ubody1,handpos1);
 	m_world->CreateJoint(&jointhand1Def);
 	
+	///Creating 2nd optional Revolute joint between upper body (ubody1) and handbody11
+	handpos1.Set(ubody1->GetPosition().x+4.0f+1.0f,ubody1->GetPosition().y+12.0f+0.5f);
+	b2RevoluteJointDef jointhand11Def;
+	jointhand11Def.Initialize(handbody11, ubody1,handpos1);
+	m_world->CreateJoint(&jointhand11Def);
 	///Creating hand2 (hand arm)
 	handDef.position.Set(handlebody->GetWorldCenter().x,handlebody->GetWorldCenter().y);
 	handshape.SetAsBox(5.0f,1.0f,b2Vec2(-5*cosf(b2_pi/12),5*sinf(b2_pi/12)),-b2_pi/12);
 	b2Body* handbody2 = m_world->CreateBody(&handDef);
 	handbody2->CreateFixture(&handfd);
 	
+	///Creating 2nd optional hand22 (hand arm)
+	handDef.position.Set(handlebody->GetWorldCenter().x+1.0f,handlebody->GetWorldCenter().y+0.5f);
+	b2Body* handbody22 = m_world->CreateBody(&handDef);
+	handbody22->CreateFixture(&handfd);
 	///Adding Revolute joint between upper body (ubody1) and handbody2
 	b2RevoluteJointDef jointhand2Def;
 	b2Vec2 handpos2;
@@ -259,12 +298,24 @@ dominos_t::dominos_t()
 	jointhand2Def.Initialize(handbody2, handlebody,handpos2);
 	m_world->CreateJoint(&jointhand2Def);
 	
+	///Creating 2nd optional Revolute joint between upper body (ubody1) and handbody22
+	handpos2.Set(handlebody->GetWorldCenter().x+1.0f,handlebody->GetWorldCenter().y+0.5f);
+	b2RevoluteJointDef jointhand22Def;
+	jointhand22Def.Initialize(handbody22, handlebody,handpos2);
+	m_world->CreateJoint(&jointhand22Def);
 	///Adding Revolute joint between handbody1 and handbody2
 	b2RevoluteJointDef jointDef_hands;
 	b2Vec2 hands_pos;
 	hands_pos.Set(handbody1->GetWorldCenter().x+4*cosf(b2_pi/3),handbody1->GetWorldCenter().y-4*sinf(b2_pi/3));
 	jointDef_hands.Initialize(handbody1, handbody2,hands_pos);
 	m_world->CreateJoint(&jointDef_hands);
+	
+	///Creating 2nd optional Revolute joint between handbody11 and handbody22
+	b2RevoluteJointDef jointDef_hands1;
+	b2Vec2 hands_pos1;
+	hands_pos1.Set(handbody11->GetWorldCenter().x+4*cosf(b2_pi/3),handbody11->GetWorldCenter().y-4*sinf(b2_pi/3));
+	jointDef_hands1.Initialize(handbody11, handbody22,hands_pos1);
+	m_world->CreateJoint(&jointDef_hands1);
 //////////////////////////////////////////////////////////////////////////////        
 	///back gear
 	b2CircleShape gearshape;
