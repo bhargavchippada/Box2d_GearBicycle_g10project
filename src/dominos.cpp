@@ -195,8 +195,8 @@ dominos_t::dominos_t()
 	ubodyfd.density=1.0f;  
 	b2Vec2 ubodypts[6];
 	ubodypts[0].Set(-2.0f, -0.2f);
-	ubodypts[1].Set(-4.0f, 6.0f);
-	ubodypts[2].Set(1.0f, 15.0f);
+	ubodypts[1].Set(-3.0f, 6.0f);
+	ubodypts[2].Set(2.0f, 15.0f);
 	ubodypts[3].Set(6.0f, 14.0f);
 	ubodypts[4].Set(6.0f, 6.0f);
 	ubodypts[5].Set(3.0f,-0.2f);
@@ -212,8 +212,8 @@ dominos_t::dominos_t()
 	///Adding Revolute Joints between ubody1 and seat
 	b2RevoluteJointDef jointDef_ubody1;
 	jointDef_ubody1.Initialize(ubody1, seatbody, ubody1->GetPosition());
-	jointDef_ubody1.lowerAngle =-0.02*b2_pi; // -90 degrees
-    jointDef_ubody1.upperAngle = 0.125f * b2_pi; // 45 degrees
+	jointDef_ubody1.lowerAngle =-0.02*b2_pi;
+    jointDef_ubody1.upperAngle = 0.125f * b2_pi;
     jointDef_ubody1.enableLimit = true;
 	m_world->CreateJoint(&jointDef_ubody1);
 
@@ -223,6 +223,32 @@ dominos_t::dominos_t()
 	jointDef_ubdhandle.frequencyHz = 2.5f;
 	jointDef_ubdhandle.dampingRatio = 0.4f;
 	m_world->CreateJoint(&jointDef_ubdhandle);
+	ubodyDef.position.Set(seatbody->GetPosition().x,seatbody->GetPosition().y+1.5f);
+//////////////////////////////////////////////////////////////////////////////  
+	///Adding head to upper body
+	ubodyfd.shape = new b2CircleShape;
+	b2CircleShape headcircle;
+	headcircle.m_radius = 2.5;
+	ubodyfd.shape=&headcircle;
+	///Creating head of man
+	ubodyDef.position.Set(ubody1->GetPosition().x+3.5+0.5,ubody1->GetPosition().y+14.5f+2.5);
+	b2Body* uhead = m_world->CreateBody(&ubodyDef);
+	uhead->CreateFixture(&ubodyfd);
+	///Adding Revolute Joints between head and ubody1
+	b2RevoluteJointDef jointDef_uhead;
+	jointDef_uhead.Initialize(uhead, ubody1, b2Vec2(ubody1->GetPosition().x+3.5,ubody1->GetPosition().y+14.5f));
+	jointDef_uhead.lowerAngle =-0.02*b2_pi;
+    jointDef_uhead.upperAngle = 0.125f * b2_pi;
+    jointDef_uhead.enableLimit = true;
+	m_world->CreateJoint(&jointDef_uhead);
+	///Distance Joint behind ubody1 and handle
+	b2DistanceJointDef jointDef_ubdhead;
+	b2Vec2 disthead;
+	disthead.Set(ubody1->GetWorldCenter().x+6,ubody1->GetWorldCenter().y+4);
+	jointDef_ubdhead.Initialize(uhead,ubody1,uhead->GetWorldCenter(),disthead);
+	jointDef_ubdhead.frequencyHz = 1.0f;
+	jointDef_ubdhead.dampingRatio = 0.4f;
+	m_world->CreateJoint(&jointDef_ubdhead);
 //////////////////////////////////////////////////////////////////////////////  
 	///Adding hands to upper body
 	b2FixtureDef handfd;
