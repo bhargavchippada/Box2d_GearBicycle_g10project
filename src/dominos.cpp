@@ -29,6 +29,10 @@ namespace cs296
 		wheel1->ApplyAngularImpulse( 200,0 );
 		wheel2->ApplyAngularImpulse( 200,0 );
 		break;
+		case('d'):
+		wheel1->SetAngularVelocity(0);
+		wheel2->SetAngularVelocity(0);
+		break;
 	}
 	}
 dominos_t::dominos_t()
@@ -37,7 +41,7 @@ dominos_t::dominos_t()
 	///Ground
 	{
 	  b2EdgeShape shape; 
-	  shape.Set(b2Vec2(-90.0f, -3.0f), b2Vec2(90.0f, -3.0f)); 
+	  shape.Set(b2Vec2(-180.0f, -3.0f), b2Vec2(180.0f, -3.0f)); 
 	  b2FixtureDef *grnd = new b2FixtureDef;
 	  grnd->filter.groupIndex = -5;//
 	  grnd->shape=&shape;
@@ -142,7 +146,6 @@ dominos_t::dominos_t()
      ///handles on cycle
 	 b2BodyDef* handleDef=new b2BodyDef;
 	 handleDef->type= b2_dynamicBody;
-	 handleDef->fixedRotation=true;
 	 handleDef->position.Set(wheel1->GetWorldCenter().x+22-3*cosf(b2_pi/3)+4.5*cosf(b2_pi/4), wheel1->GetWorldCenter().y+(16+3)*sinf(b2_pi/3)+4.5*sinf(b2_pi/4));
 	 b2Body* handlebody=m_world->CreateBody(handleDef);
 	 
@@ -359,7 +362,7 @@ dominos_t::dominos_t()
 	chainshape.SetAsBox(0.5f, 0.25f);
 	chainfd.shape = &chainshape;
 	chainfd.density=5.0f;
-	chainfd.friction=1.0f;
+	chainfd.friction=100.0f;
 	b2BodyDef chainDef;
 	chainDef.type = b2_dynamicBody;
 	
@@ -434,7 +437,6 @@ dominos_t::dominos_t()
 //////////////////////////////////////////////////////////////////////////////
 	///pedal1: Creating the first pedal
 	pedrodshape.SetAsBox(1.25f, .25f);  
-	pedalDef.fixedRotation=true;
 	pedalDef.position.Set(-6.0f, 4.0f);
 	b2Body* pedal1 = m_world->CreateBody(&pedalDef);
 	pedal1->CreateFixture(&pedalfd);
@@ -472,7 +474,11 @@ dominos_t::dominos_t()
 	///Distance Joint behind leg1 and pedal1
 	b2DistanceJointDef jointleg1Def;
 	b2Vec2 footpos1;
-	footpos1.Set(pedal1->GetWorldCenter().x,pedal1->GetWorldCenter().y+0.25f);
+	footpos1.Set(pedal1->GetWorldCenter().x-1.25f,pedal1->GetWorldCenter().y+0.25f);
+	jointleg1Def.Initialize(legbody1, pedal1,footpos1,footpos1);
+	m_world->CreateJoint(&jointleg1Def);
+	
+	footpos1.Set(pedal1->GetWorldCenter().x+1.25f,pedal1->GetWorldCenter().y+0.25f);
 	jointleg1Def.Initialize(legbody1, pedal1,footpos1,footpos1);
 	m_world->CreateJoint(&jointleg1Def);
 	
@@ -484,7 +490,11 @@ dominos_t::dominos_t()
 	///Distance Joint behind leg2 and pedal2
 	b2DistanceJointDef jointleg2Def;
 	b2Vec2 footpos2;
-	footpos2.Set(pedal2->GetWorldCenter().x,pedal2->GetWorldCenter().y+0.25f);
+	footpos2.Set(pedal2->GetWorldCenter().x-1.25,pedal2->GetWorldCenter().y+0.25f);
+	jointleg2Def.Initialize(legbody2, pedal2,footpos2,footpos2);
+	m_world->CreateJoint(&jointleg2Def);
+	
+	footpos2.Set(pedal2->GetWorldCenter().x+1.25,pedal2->GetWorldCenter().y+0.25f);
 	jointleg2Def.Initialize(legbody2, pedal2,footpos2,footpos2);
 	m_world->CreateJoint(&jointleg2Def);
 //////////////////////////////////////////////////////////////////////////////
