@@ -185,8 +185,9 @@ dominos_t::dominos_t()
 	b2DistanceJointDef jointDef_gearbars;
 	b2Vec2 barmidpos(rodbody->GetPosition().x+2.25*cosf(b2_pi/4),rodbody->GetPosition().y-2.25*sinf(b2_pi/4));
 	jointDef_gearbars.Initialize(barbd,rodbody,barbd->GetWorldCenter(),barmidpos);
-	jointDef_gearbars.frequencyHz = 10.0f;
+	jointDef_gearbars.frequencyHz = 12.0f;
 	jointDef_gearbars.dampingRatio = 1.0f;
+	jointDef_gearbars.length=2.0f;
 	m_world->CreateJoint(&jointDef_gearbars);
 //////////////////////////////////////////////////////////////////////////////
 	///Lower gear system roller 2
@@ -449,9 +450,10 @@ dominos_t::dominos_t()
     chainfd.filter.categoryBits = 0x0004;
     chainfd.filter.maskBits = 0x0002;
 	b2PolygonShape chainshape;
-	chainshape.SetAsBox(0.5f, 0.25f);
+	float wid=0.5,heig=0.2;
+	chainshape.SetAsBox(wid, heig);
 	chainfd.shape = &chainshape;
-	chainfd.density=1.0f;
+	chainfd.density=1.5f;
 	chainfd.friction=1000.0f;
 	b2BodyDef chainDef;
 	chainDef.type = b2_dynamicBody;
@@ -459,98 +461,98 @@ dominos_t::dominos_t()
 	///Top horizontal
  for (int i = 0; i < 16; ++i)
 	{
-	vs[i].Set(-21.0f+1.0f*i,9.0f);
-	chainDef.position.Set(-20.5f+1.0f*i,9.0f);
+	vs[i].Set(-21.0f+(2*wid)*i,9.0f);
+	chainDef.position.Set(-20.5f+(2*wid)*i,9.0f);
 	conveyer[i]=m_world->CreateBody(&chainDef);
 	conveyer[i]->CreateFixture(&chainfd);
 	}
 	
 	///rightmost vertical 
-	chainshape.SetAsBox(0.25f, 0.5f);
+	chainshape.SetAsBox(heig, wid);
  for (int i = 0; i < 4; ++i)
 	{
-	vs[i+16].Set(-5.0f,9.0f-i*1.0f);
-	chainDef.position.Set(-5.0f,8.5f-i*1.0f);
+	vs[i+16].Set(-5.0f,9.0f-i*(2*wid));
+	chainDef.position.Set(-5.0f,8.5f-i*(2*wid));
 	conveyer[i+16]=m_world->CreateBody(&chainDef);
 	conveyer[i+16]->CreateFixture(&chainfd);
 	}
 	
 	///lower horizontal longest
-	chainshape.SetAsBox(0.5f, 0.25f);
+	chainshape.SetAsBox(wid, heig);
  for (int i = 0; i < 10; ++i)
 	{
-	vs[20+i].Set(-5.0f-1.0f*i,5.0f);
-	chainDef.position.Set(-5.5f-1.0f*i,5.0f);
+	vs[20+i].Set(-5.0f-(2*wid)*i,5.0f);
+	chainDef.position.Set(-5.5f-(2*wid)*i,5.0f);
 	conveyer[i+20]=m_world->CreateBody(&chainDef);
 	conveyer[i+20]->CreateFixture(&chainfd);		
 	}
 	
 	///lower vertical longest
-	chainshape.SetAsBox(0.25f, 0.55f);
+	chainshape.SetAsBox(heig, wid);
  for (int i = 0; i < 3; ++i)
 	{
-	vs[30+i].Set(-15.0f,5.0f-1.0f*i);
-	chainDef.position.Set(-15,4.5f-1.0f*i);
+	vs[30+i].Set(-15.0f,5.0f-(2*wid)*i);
+	chainDef.position.Set(-15,4.5f-(2*wid)*i);
 	conveyer[i+30] = m_world->CreateBody(&chainDef);
 	conveyer[i+30]->CreateFixture(&chainfd);
 	}
 	
 	///lowermost horizontal
-	chainshape.SetAsBox(0.55f, 0.25f);
+	chainshape.SetAsBox(wid, heig);
  for (int i = 0; i < 5; ++i)
 	{
-	vs[33+i].Set(-15.0f-1.0f*i,2.0f);
-	chainDef.position.Set(-15.5f-1.0f*i,2.0f);
+	vs[33+i].Set(-15.0f-(2*wid)*i,2.0f);
+	chainDef.position.Set(-15.5f-(2*wid)*i,2.0f);
 	conveyer[i+33] = m_world->CreateBody(&chainDef);
 	conveyer[i+33]->CreateFixture(&chainfd);
 	}
 	
 	///lower vertical small left
-	chainshape.SetAsBox(0.25f, 0.55f);
+	chainshape.SetAsBox(heig, wid);
  for (int i = 0; i < 1; ++i)
 	{
-	vs[38+i].Set(-20.0f,2.0f+1.0f*i);
-	chainDef.position.Set(-20.0f,2.5f+1.0f*i);
+	vs[38+i].Set(-20.0f,2.0f+(2*wid)*i);
+	chainDef.position.Set(-20.0f,2.5f+(2*wid)*i);
 	conveyer[i+38] = m_world->CreateBody(&chainDef);
 	conveyer[i+38]->CreateFixture(&chainfd);
 	}
 	
 	///lower horizontal smallest 
-	chainshape.SetAsBox(0.55f, 0.25f);
+	chainshape.SetAsBox(wid, heig);
  for (int i = 0; i <4; ++i)
 	{
-	vs[39+i].Set(-20+1.0f*i,3);
-	chainDef.position.Set(-19.5+1.0f*i,3);
+	vs[39+i].Set(-20+(2*wid)*i,3);
+	chainDef.position.Set(-19.5+(2*wid)*i,3);
 	conveyer[i+39] = m_world->CreateBody(&chainDef);
 	conveyer[i+39]->CreateFixture(&chainfd);
 	}
 
 	///lower vertical inbetween 
-	chainshape.SetAsBox(0.25f, 0.55f);
+	chainshape.SetAsBox(heig, wid);
  for (int i = 0; i < 3; ++i)
 	{
-	vs[43+i].Set(-16.0f,3.0f+1.0f*i);
-	chainDef.position.Set(-16.0f,3.5f+1.0f*i);
+	vs[43+i].Set(-16.0f,3.0f+(2*wid)*i);
+	chainDef.position.Set(-16.0f,3.5f+(2*wid)*i);
 	conveyer[i+43] = m_world->CreateBody(&chainDef);
 	conveyer[i+43]->CreateFixture(&chainfd);
 	}
 
 	///middle horizontal leftmost 
-	chainshape.SetAsBox(0.55f, 0.25f);
+	chainshape.SetAsBox(wid, heig);
  for (int i = 0; i < 5; ++i)
 	{
-	vs[46+i].Set(-16.0f-1.0f*i,6.0f);
-	chainDef.position.Set(-16.5f-1.0f*i,6.0f);
+	vs[46+i].Set(-16.0f-(2*wid)*i,6.0f);
+	chainDef.position.Set(-16.5f-(2*wid)*i,6.0f);
 	conveyer[i+46] = m_world->CreateBody(&chainDef);
 	conveyer[i+46]->CreateFixture(&chainfd);
 	}
 
 	///upper leftmost vertical
-	chainshape.SetAsBox(0.25f, 0.55f);
+	chainshape.SetAsBox(heig, wid);
  for (int i = 0; i < 3; ++i)
 	{
-    vs[51+i].Set(-21.0f,6.0f+1.0f*i);
-	chainDef.position.Set(-21.0f,6.5f+1.0f*i);
+    vs[51+i].Set(-21.0f,6.0f+(2*wid)*i);
+	chainDef.position.Set(-21.0f,6.5f+(2*wid)*i);
 	conveyer[i+51] = m_world->CreateBody(&chainDef);
 	conveyer[i+51]->CreateFixture(&chainfd);
 	}
