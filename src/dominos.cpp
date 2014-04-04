@@ -18,7 +18,15 @@ namespace cs296
 	///back wheel
 	b2Body* wheel1;
 	///front wheel
-	 b2Body* wheel2;
+	b2Body* wheel2;
+	///gear number(0 to 4)
+	int gearnum=4;
+	///backgear called gearbody1
+	b2CircleShape gearshape;
+	b2Fixture* backgearFixture;
+	b2FixtureDef gearfd;
+	b2BodyDef gearbd;
+	b2Body* gearbody1;
 	void dominos_t::keyboard(unsigned char key)
 	{
 	  switch(key){
@@ -29,11 +37,25 @@ namespace cs296
 		wheel1->ApplyAngularImpulse( 200,0 );
 		wheel2->ApplyAngularImpulse( 200,0 );
 		break;
-		case('d'):
+		case('f'):
 		wheel1->SetAngularVelocity(0);
 		wheel2->SetAngularVelocity(0);
 		break;
-	}
+		case('a'):
+		if(gearnum>0) gearnum=gearnum-1;
+		else break;
+		gearbody1->DestroyFixture(backgearFixture);
+        gearshape.m_radius = (gearnum*0.5f+1.0f);
+		backgearFixture=gearbody1->CreateFixture(&gearfd);
+		break;
+		case('d'):
+		if(gearnum<4) gearnum=gearnum+1;
+		else break;
+		gearbody1->DestroyFixture(backgearFixture);
+        gearshape.m_radius = (gearnum*0.5f+1.0f);
+		backgearFixture=gearbody1->CreateFixture(&gearfd);
+		break;
+		}
 	}
 dominos_t::dominos_t()
 {
@@ -158,7 +180,7 @@ dominos_t::dominos_t()
 	 ///Adding Revolute Joints between thigh1 and seat
 	 b2WeldJointDef jointDef_handle;
 	 jointDef_handle.Initialize(handlebody, rodbody, handlebody->GetWorldCenter());
-	 m_world->CreateJoint(&jointDef_handle);
+	 m_world->CreateJoint(&jointDef_handle); 
 //////////////////////////////////////////////////////////////////////////////
 	///Creating the thighs of man on seat
 	b2FixtureDef thighfd;
@@ -215,7 +237,7 @@ dominos_t::dominos_t()
 	///Adding Revolute Joints between ubody1 and seat
 	b2RevoluteJointDef jointDef_ubody1;
 	jointDef_ubody1.Initialize(ubody1, seatbody, ubody1->GetPosition());
-	jointDef_ubody1.lowerAngle =-0.02*b2_pi;
+	jointDef_ubody1.lowerAngle =-0.01f*b2_pi;
     jointDef_ubody1.upperAngle = 0.125f * b2_pi;
     jointDef_ubody1.enableLimit = true;
 	m_world->CreateJoint(&jointDef_ubody1);
@@ -321,9 +343,7 @@ dominos_t::dominos_t()
 	m_world->CreateJoint(&jointDef_hands1);
 //////////////////////////////////////////////////////////////////////////////        
 	///back gear
-	b2CircleShape gearshape;
 	gearshape.m_radius = 3.0;
-	b2FixtureDef gearfd;
 	gearfd.filter.groupIndex = -1;//
 	gearfd.filter.categoryBits = 0x0002;//
 	gearfd.filter.maskBits = 0x0004;//
@@ -331,16 +351,24 @@ dominos_t::dominos_t()
 	gearfd.density = 1.0f;
 	gearfd.friction = 1.0f;
 	gearfd.restitution = 0.0f;
-	b2BodyDef gearbd;
 	gearbd.type = b2_dynamicBody;
 	gearbd.position.Set(-20.0f, 8.0f);
-	b2Body* gearbody1 = m_world->CreateBody(&gearbd);
-	gearbody1->CreateFixture(&gearfd);
+	gearbody1 = m_world->CreateBody(&gearbd);
+	backgearFixture=gearbody1->CreateFixture(&gearfd);
 
 	///Front gear
 	gearbd.position.Set(-6.0f, 8.0f);
 	frontgear = m_world->CreateBody(&gearbd);
 	frontgear->CreateFixture(&gearfd);
+	
+	///Dummy gear system
+	for(int i=0;i<5;i++)
+		 {	
+			 gearshape.m_radius = 1+i*0.5f;
+			 fd1->density = 0.1f;
+			 fd1->shape=&gearshape;
+			 rodbody->CreateFixture(fd1);
+		 }
 ////////////////////////////////////////////////////////////////////////////// 
 	///Adding Revolute joints between gears and cycle frame
 	b2RevoluteJointDef jointDef1;
@@ -352,8 +380,8 @@ dominos_t::dominos_t()
 	m_world->CreateJoint(&jointDef2);
 //////////////////////////////////////////////////////////////////////////////
 	///Adding the Chain
-	b2Vec2 vs[44];
-	b2Body* conveyer[44];
+	b2Vec2 vs[100];
+	b2Body* conveyer[100];
 	
 	b2FixtureDef chainfd;
     chainfd.filter.categoryBits = 0x0004;
@@ -366,54 +394,114 @@ dominos_t::dominos_t()
 	b2BodyDef chainDef;
 	chainDef.type = b2_dynamicBody;
 	
-	///The top chain units
+	///
  for (int i = 0; i < 16; ++i)
 	{
-	vs[i].Set(-21.0f+1.0f*i,11.0f);
-	chainDef.position.Set(-20.5f+1.0f*i,11.0f);
+	vs[i].Set(-21.0f+1.0f*i,9.0f);
+	chainDef.position.Set(-20.5f+1.0f*i,9.0f);
 	conveyer[i]=m_world->CreateBody(&chainDef);
 	conveyer[i]->CreateFixture(&chainfd);
 	}
 	
-	///The right chain units
+	///
 	chainshape.SetAsBox(0.25f, 0.5f);
- for (int i = 0; i < 6; ++i)
+ for (int i = 0; i < 4; ++i)
 	{
-	vs[i+16].Set(-5.0f,11.0f-i*1.0f);
-	chainDef.position.Set(-5.0f,10.5f-i*1.0f);
+	vs[i+16].Set(-5.0f,9.0f-i*1.0f);
+	chainDef.position.Set(-5.0f,8.5f-i*1.0f);
 	conveyer[i+16]=m_world->CreateBody(&chainDef);
 	conveyer[i+16]->CreateFixture(&chainfd);
 	}
 	
-	///The Bottom chain units
+	///
 	chainshape.SetAsBox(0.5f, 0.25f);
- for (int i = 0; i < 16; ++i)
+ for (int i = 0; i < 10; ++i)
 	{
-	vs[i+22].Set(-5.0f-1.0f*i,5.0f);
+	vs[20+i].Set(-5.0f-1.0f*i,5.0f);
 	chainDef.position.Set(-5.5f-1.0f*i,5.0f);
-	conveyer[i+22]=m_world->CreateBody(&chainDef);
-	conveyer[i+22]->CreateFixture(&chainfd);		
+	conveyer[i+20]=m_world->CreateBody(&chainDef);
+	conveyer[i+20]->CreateFixture(&chainfd);		
 	}
 	
-	///The left chain units
-	chainshape.SetAsBox(0.25f, 0.5f);
- for (int i = 0; i < 6; ++i)
+	///
+	chainshape.SetAsBox(0.25f, 0.55f);
+ for (int i = 0; i < 3; ++i)
 	{
-	vs[i+38].Set(-21.0f,5.0f+1.0f*i);
-	chainDef.position.Set(-21.0f,5.0f+1.0f*i+.5f);
-	conveyer[i+38] = m_world->CreateBody(&chainDef);
-	conveyer[i+38]->CreateFixture(&chainfd);
+	vs[30+i].Set(-15.0f,5.0f-1.0f*i);
+	chainDef.position.Set(-15.0f,4.5f-1.0f*i);
+	conveyer[i+30] = m_world->CreateBody(&chainDef);
+	conveyer[i+30]->CreateFixture(&chainfd);
+	}
+	
+	///
+	chainshape.SetAsBox(0.55f, 0.25f);
+ for (int i = 0; i < 4; ++i)
+	{
+	vs[33+i].Set(-15.0f-1.0f*i,2.0f);
+	chainDef.position.Set(-15.5f-1.0f*i,2.0f);
+	conveyer[i+33] = m_world->CreateBody(&chainDef);
+	conveyer[i+33]->CreateFixture(&chainfd);
+	}
+	
+	///
+	chainshape.SetAsBox(0.25f, 0.55f);
+ for (int i = 0; i < 2; ++i)
+	{
+	vs[37+i].Set(-19.0f,2.0f+1.0f*i);
+	chainDef.position.Set(-19.0f,2.5f+1.0f*i);
+	conveyer[i+37] = m_world->CreateBody(&chainDef);
+	conveyer[i+37]->CreateFixture(&chainfd);
+	}
+	
+	///
+	chainshape.SetAsBox(0.55f, 0.25f);
+ for (int i = 0; i < 3; ++i)
+	{
+	vs[39+i].Set(-19.0f+1.0f*i,4.0f);
+	chainDef.position.Set(-18.5f+1.0f*i,4.0f);
+	conveyer[i+39] = m_world->CreateBody(&chainDef);
+	conveyer[i+39]->CreateFixture(&chainfd);
+	}
+	
+	///
+	chainshape.SetAsBox(0.25f, 0.55f);
+ for (int i = 0; i < 2; ++i)
+	{
+	vs[42+i].Set(-16.0f,4.0f+1.0f*i);
+	chainDef.position.Set(-16.0f,4.5f+1.0f*i);
+	conveyer[i+42] = m_world->CreateBody(&chainDef);
+	conveyer[i+42]->CreateFixture(&chainfd);
+	}
+	
+	///
+	chainshape.SetAsBox(0.55f, 0.25f);
+ for (int i = 0; i < 5; ++i)
+	{
+	vs[44+i].Set(-16.0f-1.0f*i,6.0f);
+	chainDef.position.Set(-16.5f-1.0f*i,6.0f);
+	conveyer[i+44] = m_world->CreateBody(&chainDef);
+	conveyer[i+44]->CreateFixture(&chainfd);
+	}
+	
+	///
+	chainshape.SetAsBox(0.25f, 0.55f);
+ for (int i = 0; i < 3; ++i)
+	{
+    vs[49+i].Set(-21.0f,6.0f+1.0f*i);
+	chainDef.position.Set(-21.0f,6.5f+1.0f*i);
+	conveyer[i+49] = m_world->CreateBody(&chainDef);
+	conveyer[i+49]->CreateFixture(&chainfd);
 	}
 //////////////////////////////////////////////////////////////////////////////
 	///Adding Revolute joint between chain units
 	b2RevoluteJointDef jointDef3;
- for(int i=1;i<44;i++)
+ for(int i=1;i<52;i++)
 	{
 	jointDef3.Initialize(conveyer[i-1], conveyer[i],vs[i]);
 	m_world->CreateJoint(&jointDef3);
 	}
 	
-	jointDef3.Initialize(conveyer[0], conveyer[43],vs[0]);
+	jointDef3.Initialize(conveyer[0], conveyer[51],vs[0]);
 	m_world->CreateJoint(&jointDef3);
 //////////////////////////////////////////////////////////////////////////////	
 	///Creating connecting pedal rod and pedals
