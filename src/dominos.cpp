@@ -138,8 +138,33 @@ dominos_t::dominos_t()
 	 ///60* front cycle small handle
 	 boxshape.SetAsBox(2.5,0.5,b2Vec2(22-3*cosf(b2_pi/3)+2.0*cosf(b2_pi/4),(16+3)*sinf(b2_pi/3)+2.0*sinf(b2_pi/4)),b2_pi/4);
 	 rodbody->CreateFixture(fd1);
+	 ///Creating upper gear bar connected to cycle frame (rodbody)
+	 boxshape.SetAsBox(2.25f,0.4f,b2Vec2(2.25f*cosf(b2_pi/4),-2.25f*sinf(b2_pi/4)),-b2_pi/4);
+	 rodbody->CreateFixture(fd1);
+////////////////////////////////////////////////////////////////////////////// 
+	 ///Upper gear system roller 
+	 b2CircleShape rollershape;
+	 rollershape.m_radius=0.75f;
+	 b2FixtureDef rollerfd;
+	 rollerfd.density = 1.0f;
+	 rollerfd.friction = 5.0f;
+	 rollerfd.restitution = 0.2f;
+	 rollerfd.shape=&rollershape;
+	 rollerfd.filter.groupIndex = -1;//
+	 rollerfd.filter.categoryBits = 0x0002;//
+	 rollerfd.filter.maskBits = 0x0004;//
+	 b2BodyDef rollerbd;
+	 rollerbd.type= b2_dynamicBody;
+	 rollerbd.position.Set(rodbody->GetPosition().x+4.5*cosf(b2_pi/4),rodbody->GetPosition().y-4.5*sinf(b2_pi/4));
+	 b2Body* rollerbody1=m_world->CreateBody(&rollerbd);
+	 rollerbody1->CreateFixture(&rollerfd);
+	 
+	 ///Adding Revolute Joint between upper roller1 and cycle frame gear bar
+	 b2RevoluteJointDef JointDef_roller1;
+	 JointDef_roller1.Initialize(rollerbody1,rodbody,rollerbody1->GetWorldCenter());
+	 m_world->CreateJoint(&JointDef_roller1);
 //////////////////////////////////////////////////////////////////////////////        
-	 ///Adding Rovolute Joints between tires and cycle frame
+	 ///Adding Revolute Joints between tires and cycle frame
 	 b2RevoluteJointDef revoluteJointDef;
 	 revoluteJointDef.enableMotor = true;
 	 
@@ -586,7 +611,6 @@ dominos_t::dominos_t()
 	jointleg2Def.Initialize(legbody2, pedal2,footpos2,footpos2);
 	m_world->CreateJoint(&jointleg2Def);
 //////////////////////////////////////////////////////////////////////////////
-
 	///RevoluteJoint between thigh1 and leg1
 	b2RevoluteJointDef jointDef_thleg1;
 	b2Vec2 kneepos1;
