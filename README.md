@@ -27,6 +27,9 @@ It's a group project for the course code named CS296: Software Systems Lab Under
 
 1. Use "w" key to ride the bicycle forward.
 2. Use "s" key to ride the bicycle backward.
+3. Use "a" key for gear down (change to smaller gear)
+4. Use "d" key for gear up (change to larger gear)
+5. Use "f" key for disk break (to stop the bicycle suddenly)
 
 ###License
 
