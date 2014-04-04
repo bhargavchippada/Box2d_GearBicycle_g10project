@@ -163,6 +163,31 @@ dominos_t::dominos_t()
 	 b2RevoluteJointDef JointDef_roller1;
 	 JointDef_roller1.Initialize(rollerbody1,rodbody,rollerbody1->GetWorldCenter());
 	 m_world->CreateJoint(&JointDef_roller1);
+////////////////////////////////////////////////////////////////////////////// 
+	///Lower gear system bar
+	b2BodyDef barDef;
+	barDef.type= b2_dynamicBody;
+	b2Vec2 barjointpos(rodbody->GetPosition().x+4.5*cosf(b2_pi/4),rodbody->GetPosition().y-4.5*sinf(b2_pi/4));
+	barDef.position=barjointpos;
+	boxshape.SetAsBox(1.75,0.4f,b2Vec2(-1.75*cosf(b2_pi/4),-1.75*sinf(b2_pi/4)),b2_pi/4);
+	b2Body* barbd=m_world->CreateBody(&barDef);
+	barbd->CreateFixture(fd1);
+	///Adding Revolute Joint between lower bar and upper bar
+	//b2RevoluteJointDef JointDef_gearbar;
+	b2WeldJointDef JointDef_gearbar;
+	JointDef_gearbar.Initialize(barbd,rodbody,barjointpos);
+	m_world->CreateJoint(&JointDef_gearbar);
+//////////////////////////////////////////////////////////////////////////////
+	///Lower gear system roller 2
+	b2Vec2 rollerpos2(barbd->GetPosition().x-3.5*cosf(b2_pi/4),barbd->GetPosition().y-3.5*sinf(b2_pi/4));
+	rollerbd.position=rollerpos2;
+	b2Body* rollerbody2=m_world->CreateBody(&rollerbd);
+	rollerbody2->CreateFixture(&rollerfd);
+	 
+	 ///Adding Revolute Joint between lower roller2 and lower gear bar
+	 b2RevoluteJointDef JointDef_roller2;
+	 JointDef_roller2.Initialize(rollerbody2,barbd,rollerbody2->GetWorldCenter());
+	 m_world->CreateJoint(&JointDef_roller2);
 //////////////////////////////////////////////////////////////////////////////        
 	 ///Adding Revolute Joints between tires and cycle frame
 	 b2RevoluteJointDef revoluteJointDef;
