@@ -31,11 +31,11 @@ namespace cs296
 	{
 	  switch(key){
 		case('w'):
-		frontgear->ApplyAngularImpulse( -400,0 );
+		frontgear->ApplyAngularImpulse( -100,0 );
 		break;
 		case('s'):
-		wheel1->ApplyAngularImpulse( 200,0 );
-		wheel2->ApplyAngularImpulse( 200,0 );
+		wheel1->ApplyAngularImpulse( 50,0 );
+		wheel2->ApplyAngularImpulse( 50,0 );
 		break;
 		case('f'):
 		wheel1->SetAngularVelocity(0);
@@ -169,14 +169,25 @@ dominos_t::dominos_t()
 	barDef.type= b2_dynamicBody;
 	b2Vec2 barjointpos(rodbody->GetPosition().x+4.5*cosf(b2_pi/4),rodbody->GetPosition().y-4.5*sinf(b2_pi/4));
 	barDef.position=barjointpos;
-	boxshape.SetAsBox(1.75,0.4f,b2Vec2(-1.75*cosf(b2_pi/4),-1.75*sinf(b2_pi/4)),b2_pi/4);
+	boxshape.SetAsBox(1.75f,0.4f,b2Vec2(-1.75*cosf(b2_pi/4),-1.75*sinf(b2_pi/4)),b2_pi/4);
 	b2Body* barbd=m_world->CreateBody(&barDef);
 	barbd->CreateFixture(fd1);
 	///Adding Revolute Joint between lower bar and upper bar
-	//b2RevoluteJointDef JointDef_gearbar;
-	b2WeldJointDef JointDef_gearbar;
+	b2RevoluteJointDef JointDef_gearbar;
+	//b2WeldJointDef JointDef_gearbar;
 	JointDef_gearbar.Initialize(barbd,rodbody,barjointpos);
+	JointDef_gearbar.lowerAngle =-0.25f*b2_pi;
+    JointDef_gearbar.upperAngle = 0.125f * b2_pi;
+    JointDef_gearbar.enableLimit = true;
 	m_world->CreateJoint(&JointDef_gearbar);
+	
+	///Distance Joint between the gear system bars
+	b2DistanceJointDef jointDef_gearbars;
+	b2Vec2 barmidpos(rodbody->GetPosition().x+2.25*cosf(b2_pi/4),rodbody->GetPosition().y-2.25*sinf(b2_pi/4));
+	jointDef_gearbars.Initialize(barbd,rodbody,barbd->GetWorldCenter(),barmidpos);
+	jointDef_gearbars.frequencyHz = 5.0f;
+	jointDef_gearbars.dampingRatio = 0.4f;
+	m_world->CreateJoint(&jointDef_gearbars);
 //////////////////////////////////////////////////////////////////////////////
 	///Lower gear system roller 2
 	b2Vec2 rollerpos2(barbd->GetPosition().x-3.5*cosf(b2_pi/4),barbd->GetPosition().y-3.5*sinf(b2_pi/4));
@@ -407,6 +418,7 @@ dominos_t::dominos_t()
 	backgearFixture=gearbody1->CreateFixture(&gearfd);
 
 	///Front gear
+	gearshape.m_radius = 3.0f;
 	gearbd.position.Set(-6.0f, 8.0f);
 	frontgear = m_world->CreateBody(&gearbd);
 	frontgear->CreateFixture(&gearfd);
@@ -439,12 +451,12 @@ dominos_t::dominos_t()
 	b2PolygonShape chainshape;
 	chainshape.SetAsBox(0.5f, 0.25f);
 	chainfd.shape = &chainshape;
-	chainfd.density=5.0f;
-	chainfd.friction=100.0f;
+	chainfd.density=1.0f;
+	chainfd.friction=1000.0f;
 	b2BodyDef chainDef;
 	chainDef.type = b2_dynamicBody;
 	
-	///
+	///Top horizontal
  for (int i = 0; i < 16; ++i)
 	{
 	vs[i].Set(-21.0f+1.0f*i,9.0f);
@@ -453,7 +465,7 @@ dominos_t::dominos_t()
 	conveyer[i]->CreateFixture(&chainfd);
 	}
 	
-	///
+	///rightmost vertical 
 	chainshape.SetAsBox(0.25f, 0.5f);
  for (int i = 0; i < 4; ++i)
 	{
@@ -463,7 +475,7 @@ dominos_t::dominos_t()
 	conveyer[i+16]->CreateFixture(&chainfd);
 	}
 	
-	///
+	///lower horizontal longest
 	chainshape.SetAsBox(0.5f, 0.25f);
  for (int i = 0; i < 10; ++i)
 	{
@@ -473,19 +485,19 @@ dominos_t::dominos_t()
 	conveyer[i+20]->CreateFixture(&chainfd);		
 	}
 	
-	///
+	///lower vertical longest
 	chainshape.SetAsBox(0.25f, 0.55f);
  for (int i = 0; i < 3; ++i)
 	{
 	vs[30+i].Set(-15.0f,5.0f-1.0f*i);
-	chainDef.position.Set(-15.0f,4.5f-1.0f*i);
+	chainDef.position.Set(-15,4.5f-1.0f*i);
 	conveyer[i+30] = m_world->CreateBody(&chainDef);
 	conveyer[i+30]->CreateFixture(&chainfd);
 	}
 	
-	///
+	///lowermost horizontal
 	chainshape.SetAsBox(0.55f, 0.25f);
- for (int i = 0; i < 4; ++i)
+ for (int i = 0; i < 5; ++i)
 	{
 	vs[33+i].Set(-15.0f-1.0f*i,2.0f);
 	chainDef.position.Set(-15.5f-1.0f*i,2.0f);
@@ -493,66 +505,68 @@ dominos_t::dominos_t()
 	conveyer[i+33]->CreateFixture(&chainfd);
 	}
 	
-	///
+	///lower vertical small left
 	chainshape.SetAsBox(0.25f, 0.55f);
- for (int i = 0; i < 2; ++i)
+ for (int i = 0; i < 1; ++i)
 	{
-	vs[37+i].Set(-19.0f,2.0f+1.0f*i);
-	chainDef.position.Set(-19.0f,2.5f+1.0f*i);
-	conveyer[i+37] = m_world->CreateBody(&chainDef);
-	conveyer[i+37]->CreateFixture(&chainfd);
+	vs[38+i].Set(-20.0f,2.0f+1.0f*i);
+	chainDef.position.Set(-20.0f,2.5f+1.0f*i);
+	conveyer[i+38] = m_world->CreateBody(&chainDef);
+	conveyer[i+38]->CreateFixture(&chainfd);
 	}
 	
-	///
+	///lower horizontal smallest 
 	chainshape.SetAsBox(0.55f, 0.25f);
- for (int i = 0; i < 3; ++i)
+ for (int i = 0; i <4; ++i)
 	{
-	vs[39+i].Set(-19.0f+1.0f*i,4.0f);
-	chainDef.position.Set(-18.5f+1.0f*i,4.0f);
+	vs[39+i].Set(-20+1.0f*i,3);
+	chainDef.position.Set(-19.5+1.0f*i,3);
 	conveyer[i+39] = m_world->CreateBody(&chainDef);
 	conveyer[i+39]->CreateFixture(&chainfd);
 	}
-	
-	///
-	chainshape.SetAsBox(0.25f, 0.55f);
- for (int i = 0; i < 2; ++i)
-	{
-	vs[42+i].Set(-16.0f,4.0f+1.0f*i);
-	chainDef.position.Set(-16.0f,4.5f+1.0f*i);
-	conveyer[i+42] = m_world->CreateBody(&chainDef);
-	conveyer[i+42]->CreateFixture(&chainfd);
-	}
-	
-	///
-	chainshape.SetAsBox(0.55f, 0.25f);
- for (int i = 0; i < 5; ++i)
-	{
-	vs[44+i].Set(-16.0f-1.0f*i,6.0f);
-	chainDef.position.Set(-16.5f-1.0f*i,6.0f);
-	conveyer[i+44] = m_world->CreateBody(&chainDef);
-	conveyer[i+44]->CreateFixture(&chainfd);
-	}
-	
-	///
+
+	///lower vertical inbetween 
 	chainshape.SetAsBox(0.25f, 0.55f);
  for (int i = 0; i < 3; ++i)
 	{
-    vs[49+i].Set(-21.0f,6.0f+1.0f*i);
-	chainDef.position.Set(-21.0f,6.5f+1.0f*i);
-	conveyer[i+49] = m_world->CreateBody(&chainDef);
-	conveyer[i+49]->CreateFixture(&chainfd);
+	vs[43+i].Set(-16.0f,3.0f+1.0f*i);
+	chainDef.position.Set(-16.0f,3.5f+1.0f*i);
+	conveyer[i+43] = m_world->CreateBody(&chainDef);
+	conveyer[i+43]->CreateFixture(&chainfd);
 	}
+
+	///middle horizontal leftmost 
+	chainshape.SetAsBox(0.55f, 0.25f);
+ for (int i = 0; i < 5; ++i)
+	{
+	vs[46+i].Set(-16.0f-1.0f*i,6.0f);
+	chainDef.position.Set(-16.5f-1.0f*i,6.0f);
+	conveyer[i+46] = m_world->CreateBody(&chainDef);
+	conveyer[i+46]->CreateFixture(&chainfd);
+	}
+
+	///upper leftmost vertical
+	chainshape.SetAsBox(0.25f, 0.55f);
+ for (int i = 0; i < 3; ++i)
+	{
+    vs[51+i].Set(-21.0f,6.0f+1.0f*i);
+	chainDef.position.Set(-21.0f,6.5f+1.0f*i);
+	conveyer[i+51] = m_world->CreateBody(&chainDef);
+	conveyer[i+51]->CreateFixture(&chainfd);
+	}
+	
 //////////////////////////////////////////////////////////////////////////////
 	///Adding Revolute joint between chain units
 	b2RevoluteJointDef jointDef3;
- for(int i=1;i<52;i++)
+ for(int i=1;i<54;i++)
 	{
 	jointDef3.Initialize(conveyer[i-1], conveyer[i],vs[i]);
 	m_world->CreateJoint(&jointDef3);
 	}
 	
-	jointDef3.Initialize(conveyer[0], conveyer[51],vs[0]);
+	jointDef3.Initialize(conveyer[0], conveyer[53],vs[0]);
 	m_world->CreateJoint(&jointDef3);
+	
 //////////////////////////////////////////////////////////////////////////////	
 	///Creating connecting pedal rod and pedals
     b2FixtureDef pedalfd;
