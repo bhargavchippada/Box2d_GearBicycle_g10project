@@ -82,7 +82,7 @@ dominos_t::dominos_t()
 	 b2CircleShape circleDef;
 	 circleDef.m_radius = 8;
 	 b2FixtureDef *fd2 = new b2FixtureDef;
-	 fd2->density = 2.0f;
+	 fd2->density = 1.0f;
 	 fd2->friction = 1;
 	 fd2->restitution = 0.2;
 	 fd2->filter.groupIndex = -1;//
@@ -105,8 +105,8 @@ dominos_t::dominos_t()
 	 b2PolygonShape boxshape;
 	 boxshape.SetAsBox(7,0.6,b2Vec2(7,0),0);
 	 b2FixtureDef *fd1 = new b2FixtureDef;
-	 fd1->density = 1.5f;
-	 fd1->friction = 0.5f;
+	 fd1->density = 1.0f;
+	 fd1->friction = 0.1f;
 	 fd1->restitution = 0.2f;
 	 fd1->filter.groupIndex = -1;//
 	 fd1->shape = new b2PolygonShape;
@@ -278,7 +278,7 @@ dominos_t::dominos_t()
 	b2FixtureDef ubodyfd;
 	b2PolygonShape ubodyshape;
 	ubodyfd.filter.groupIndex = -1;
-	ubodyfd.density=1.0f;  
+	ubodyfd.density=0.1f;  
 	b2Vec2 ubodypts[6];
 	ubodypts[0].Set(-2.0f, -0.2f);
 	ubodypts[1].Set(-3.0f, 6.0f);
@@ -306,7 +306,7 @@ dominos_t::dominos_t()
 	///Distance Joint behind ubody1 and handle
 	b2DistanceJointDef jointDef_ubdhandle;
 	jointDef_ubdhandle.Initialize(ubody1,handlebody,ubody1->GetWorldCenter(),handlebody->GetWorldCenter());
-	jointDef_ubdhandle.frequencyHz = 2.5f;
+	jointDef_ubdhandle.frequencyHz = 2.0f;
 	jointDef_ubdhandle.dampingRatio = 0.4f;
 	m_world->CreateJoint(&jointDef_ubdhandle);
 	ubodyDef.position.Set(seatbody->GetPosition().x,seatbody->GetPosition().y+1.5f);
@@ -409,8 +409,8 @@ dominos_t::dominos_t()
 	gearfd.filter.categoryBits = 0x0002;//
 	gearfd.filter.maskBits = 0x0004;//
 	gearfd.shape = &gearshape;
-	gearfd.density = 1.0f;
-	gearfd.friction = 1.0f;
+	gearfd.density = 0.5f;
+	gearfd.friction = 1000.0f;
 	gearfd.restitution = 0.0f;
 	gearbd.type = b2_dynamicBody;
 	gearbd.position.Set(-20.0f, 8.0f);
@@ -571,7 +571,7 @@ dominos_t::dominos_t()
 	///Creating connecting pedal rod and pedals
     b2FixtureDef pedalfd;
     pedalfd.filter.groupIndex = -1;
-	pedalfd.density=1.0f;  
+	pedalfd.density=0.5f;  
 	b2PolygonShape pedrodshape;
 	pedrodshape.SetAsBox(.25f, 4.5f);
 	pedalfd.shape = &pedrodshape;
