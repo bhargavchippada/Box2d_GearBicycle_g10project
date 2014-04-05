@@ -1,0 +1,41 @@
+#!/bin/bash
+LIMIT=150
+LIMIT2=15
+#echo "#iteration value, rerun number, step time, collision time, velocity time, position time, loop time" > ../data/g10_lab05data_02.csv
+for ((a=1; a <= LIMIT ; a++))  # Double parentheses, and naked "LIMIT"
+do
+#echo "$a" > ab.txt
+for ((b=1; b <= LIMIT2 ; b++))  # Double parentheses, and naked "LIMIT"
+do
+  #./../mybins/cs296_10_exe < ab.txt > ab.txt 
+  # A=$(./../mybins/cs296_10_exe < ab.txt | sed 's/\([a-zA-Z:\[:space:]]*\)\([0-9\.]*\)\([a-zA-Z\[:space:]]*\)/\2/')
+ # for F in $A
+#	do
+#		{
+#			read line_iter
+#			read line_step 
+#			read line_coll 
+#			read line_vel
+#			read line_upd
+#			read empty
+#			read line_loop
+#		} < $A
+#cute=$(./../mybins/cs296_10_exe $a | sed 's/\([a-zA-Z:\[:space:]]*\)\([0-9\.]*\)\([a-zA-Z\[:space:]]*\)/\2/')
+#line_iter=$((./../mybins/cs296_10_exe $a | sed 's/\([a-zA-Z:\[:space:]]*\)\([0-9\.]*\)\([a-zA-Z\[:space:]]*\)/\2/') | sed -n '1p' )
+#line_iter=$($cute | sed -n '1p')
+#line_step=$((./../mybins/cs296_10_exe $a | sed 's/\([a-zA-Z:\[:space:]]*\)\([0-9\.]*\)\([a-zA-Z\[:space:]]*\)/\2/') | sed -n '2p' )
+
+#ine_coll=$((./../mybins/cs296_10_exe $a | sed 's/\([a-zA-Z:\[:space:]]*\)\([0-9\.]*\)\([a-zA-Z\[:space:]]*\)/\2/') | sed -n '3p' )
+#line_vel=$((./../mybins/cs296_10_exe $a | sed 's/\([a-zA-Z:\[:space:]]*\)\([0-9\.]*\)\([a-zA-Z\[:space:]]*\)/\2/') | sed -n '4p' )
+
+#line_upd=$((./../mybins/cs296_10_exe $a | sed 's/\([a-zA-Z:\[:space:]]*\)\([0-9\.]*\)\([a-zA-Z\[:space:]]*\)/\2/') | sed -n '5p' )
+
+#empty=$((./../mybins/cs296_10_exe $a | sed 's/\([a-zA-Z:\[:space:]]*\)\([0-9\.]*\)\([a-zA-Z\[:space:]]*\)/\2/') | sed -n '6p' )
+#line_loop=$((./../mybins/cs296_10_exe $a | sed 's/\([a-zA-Z:\[:space:]]*\)\([0-9\.]*\)\([a-zA-Z\[:space:]]*\)/\2/') | sed -n '7p' )
+
+#		echo "$line_iter,$b,$line_step,$line_coll,$line_vel,$line_upd,$line_loop" >> ../data/g10_lab05data_02.csv
+(./../mybins/cs296_10_exe $a | sed 's/\([a-zA-Z:\[:space:]]*\)\([0-9\.]*\)\([a-zA-Z\[:space:]]*\)/\2/') | awk -v iteration=$b '{if(NR==2) {printf("%s",iteration); printf(","); printf("%s",$1); printf(",");} else if(NR==6){} else if(NR==7) {printf("%s\n",$1);} else {printf("%s",$1); printf(",");}}' >> ../data/g10_lab05data_02.csv
+done
+done
+rm -f *.txt
+exit
