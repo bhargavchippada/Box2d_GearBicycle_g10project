@@ -30,7 +30,7 @@ csv1.close()
 #data_random=csv.read()
 
 lines=[]
-r=csv.reader(open('./project/project_g10_data.csv'))
+r=csv.reader(open('./data/project_g10_data.csv'))
 #	r=csv.reader(f,delimiter=',')
 for row in r:
 	lines.append(','.join(row))
