@@ -75,11 +75,16 @@ dominos_t::dominos_t()
 	  grnd->shape=&shape;
 	  grnd->friction=1;
 	  b2BodyDef bd;
+	  ///b1 creates the complete ground body
 	  b2Body* b1=m_world->CreateBody(&bd); 
 	  b1->CreateFixture(grnd);
-	  
+	  ///uphill on the ground
+	  shape.Set(b2Vec2(180.0f, -3.0f), b2Vec2(280.0f, 9.0f)); 
+	  grnd->shape=&shape;
+	  b1->CreateFixture(grnd);
+	  ///little box on the ground
 	  b2PolygonShape shape1;
-	  shape1.SetAsBox(1,4,b2Vec2(50,0),0); 
+	  shape1.SetAsBox(1,.5,b2Vec2(50,-2.5),0); 
 	  grnd->shape=&shape1;
 	  b1->CreateFixture(grnd);
 	}
@@ -451,9 +456,9 @@ dominos_t::dominos_t()
 	m_world->CreateJoint(&jointDef2);
 //////////////////////////////////////////////////////////////////////////////
 	///Adding the Chain
-	b2Vec2 vs[100];
+	b2Vec2 vs[54];
 	///chain body
-	b2Body* conveyer[100];
+	b2Body* conveyer[54];
 	
 	b2FixtureDef chainfd;
     chainfd.filter.categoryBits = 0x0004;
@@ -466,7 +471,7 @@ dominos_t::dominos_t()
 	chainfd.friction=1000.0f;
 	b2BodyDef chainDef;
 	chainDef.type = b2_dynamicBody;
-	
+	///setting positions for each component of chain
 	///Top horizontal
  for (int i = 0; i < 16; ++i)
 	{
