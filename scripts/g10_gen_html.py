@@ -1,6 +1,6 @@
 #! /usr/bin/env python3.3
 import sys
-texf=open("./doc/g10_prof_report.tex")
+texf=open("./doc/cs296_report_10.tex")
 outputf=open("./doc/g10_project_report.html",'w')
 sys.stdout=outputf
 texflines=[(i.split('\n'))[0] for i in texf.readlines()]
@@ -50,7 +50,7 @@ def textbffunc(strg):
 def graphfunc(strg):
 	ind=strg.find('\includegraphics')
 	if(ind != -1):
-		return '<p  align="center"><img src="../plots/g10_project_plot'+(strg[1+strg.find('{'):strg.find('}')])[8:10]+'.png"></p>'
+		return '<p  align="center"><img src="../plots/g10_project_plot'+(strg[1+strg.find('{'):strg.find('}')])[16:18]+'.png"></p>'
 	else:
 		return ""
 #\texttt

@@ -43,7 +43,7 @@ rerun=10
 highrol=53
 nrand=5
 interv=20
-r=csv.reader(open('./data/project_g10_data.csv'))
+r=csv.reader(open('./data/lab09_g10_data.csv'))
 for row in r:
 	row_d=re.findall(r'[0-9]+(?:\.[0-9]+)?', ','.join(row))
 	for i in range(2):
@@ -64,7 +64,7 @@ for i in range(iteration):
 high_data=data[2][(highrol-1)*rerun:(highrol-1)*rerun+rerun]
 high_d=bar(high_data,interv)
 data2_rand=[]
-r2=csv.reader(open('./data/project_g10_random.csv'))
+r2=csv.reader(open('./data/lab09_g10_random.csv'))
 for row in r2:
 	row_d=re.findall(r'[0-9]+(?:\.[0-9]+)?', ','.join(row))
 	data2_rand.append(float(row_d[2]))
@@ -86,7 +86,7 @@ plt.ylabel("average time over reruns")
 plt.xlabel("iteration values")
 plt.ylim([0,1.4*max(average_loop)])
 legend([p1,p2,p3,p4],["avg step time over reruns for itervalues","avg loop time over reruns for itervalues","minima","maxima"])
-pylab.savefig('./plots/g10_project_plot01.png')
+pylab.savefig('./plots/g10_lab09_plot01.png')
 plt.clf()
 #print(stddev)
 
@@ -98,7 +98,7 @@ plt.ylabel('Various Timing Values')
 plt.xlabel('Iteration Values')
 plt.title('Second Plot: Step, collision, velocity and position time v/s iteration values')
 l2 = plt.legend([p3,p4,p5,p6], ["Step Time", "Collision Time", "Velocity Time", "Position Time"], loc = 1)
-plt.savefig('./plots/g10_project_plot02.png')
+plt.savefig('./plots/g10_lab09_plot02.png')
 #plt.show()
 plt.clf()
 p7 = plt.errorbar(range(iteration+1)[1:], average_step,yerr=stddev)
@@ -106,7 +106,7 @@ l3 = plt.legend([p7], ["Step Time averaged over reruns with error bars"], loc = 
 plt.xlabel('Iteration Values')
 plt.ylabel('Step Time with error bars')
 plt.title('Step time with error bars v/s iteration values')
-plt.savefig('./plots/g10_project_plot03.png')
+plt.savefig('./plots/g10_lab09_plot03.png')
 #plt.show()
 plt.clf()
 
@@ -134,7 +134,7 @@ plt.title("Frequency and cumulative distributions for step times v/s 53rd iterat
 plt.xlabel('Step Time')
 plt.ylabel('Reruns')
 plt.ylim([0,1.2*max(cumdata)])
-plt.savefig('./plots/g10_project_plot04.png')
+plt.savefig('./plots/g10_lab09_plot04.png')
 #plt.show()
 plt.clf()
 
@@ -153,6 +153,6 @@ plt.ylabel('Various Timing Values')
 plt.xlabel('Iteration Values')
 plt.title('Step time of random data v/s normal data')
 l2 = plt.legend([p3,p4,p5,p6], ["Step Time", "Fitted line","Step Time_random", "Fitted line_random"],loc = 1)#, "Velocity Time", "Position Time"], loc = 1)
-plt.savefig('./plots/g10_project_plot05.png')
+plt.savefig('./plots/g10_lab09_plot05.png')
 #plt.show()
 plt.clf()

@@ -138,14 +138,14 @@ distclean: clean
 	@$(RM) -rf $(BINDIR) $(EXTERNAL_ROOT)/include/* $(EXTERNAL_ROOT)/lib/* $(EXTERNAL_ROOT)/src/Box2D
 report:
 	@cd doc; \
-	latex  cs296_report_10; \
+	pdflatex  cs296_report_10; \
 	bibtex cs296_report_10; \
-	latex cs296_report_10; \
-	latex cs296_report_10; \
-	latex cs296_report_10; \
-	dvipdf cs296_report_10.dvi cs296_report_10.pdf;
+	pdflatex cs296_report_10; \
+	pdflatex cs296_report_10; \
+	pdflatex cs296_report_10; \
+	#dvipdf cs296_report_10.dvi cs296_report_10.pdf;
 
-install: setup exe doc
+install: setup exe doc report
 	@echo "installing"
 	@cp -r doc $(INSTALL_FOLDER)
 	@cp -r mybins/cs296_10_exe $(INSTALL_FOLDER)

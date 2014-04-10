@@ -11,8 +11,8 @@ def shuffle(x):
     x = list(x)
     random.shuffle(x)
     return x
-csv1 = open('./data/project_g10_data.csv', 'w')
-csvw = open('./data/project_g10_random.csv', 'w')
+csv1 = open('./data/lab09_g10_data.csv', 'w')
+csvw = open('./data/lab09_g10_random.csv', 'w')
 iteration=500
 rerun=10
 nrand=5
@@ -30,7 +30,7 @@ csv1.close()
 #data_random=csv.read()
 
 lines=[]
-r=csv.reader(open('./data/project_g10_data.csv'))
+r=csv.reader(open('./data/lab09_g10_data.csv'))
 #	r=csv.reader(f,delimiter=',')
 for row in r:
 	lines.append(','.join(row))

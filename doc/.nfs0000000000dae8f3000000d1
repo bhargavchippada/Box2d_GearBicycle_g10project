@@ -1,0 +1,98 @@
+\documentclass[11pt]{article}
+\usepackage[left=0.5in,right=0.5in,top=1in,bottom=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{mathptmx}
+
+\begin{document}
+
+
+\title{Physics Behind the Simulation: A CS296 Report by Group 10}
+\author{Bhargav Chippada\\
+		120050053\\
+		\texttt{bhargav.chippada19@gmail.com},\\
+		Prateesh Goyal\\
+		120050013\\
+		\texttt{g.pratish@gmail.com},\\
+		Bhupendra Singh Bhuarya\\
+		120050040\\
+		\texttt{bsbhuarya@gmail.com}}
+\date{\today}
+\maketitle
+\section{Introduction} 
+The purpose of making this report is to explain our CS296 Box2d project. We simulated a geared bicycle in Box2d. The work done for this project is our own and we have not plagiarized it from anywhere
+\section{About Our Simulation}
+Of all the complex machines we came across we found the geared bicycle with a man riding it interesting and fun to do. At the end of our journey we did something which is close to
+the reality and we are proud of it. We are happy that our simulation has all the features that we imagined it to have. We optimized it over and over again for better simulation and performance. As the end result we got a fast, fun to play with Geared bicycle along with a man riding it. we can switch the gears easily, move forward, backward and apply sudden brakes. Here is the snapshot of our simulation:
+		\begin{center}
+		\includegraphics[scale=0.7]{pic1.eps}
+		\end{center}
+\subsection{Original Design}
+This is the original Design we made using inkscape. It consists of a bicycle with changeable with gears and a man riding it.
+	\begin{center}
+		\includegraphics{projectsketch}
+	\end{center}
+\subsection{Actual Simulation}
+Here are some snapshots of the actual Box2d simulation we made.
+	\begin{center}
+	\includegraphics[scale=0.7]{pic1.eps}
+	\end{center}
+	\begin{center}
+	\includegraphics[scale=0.7]{pic2.eps}
+	\end{center}
+	\begin{center}
+	\includegraphics[scale=0.7]{pic3.eps}
+	\end{center}
+\subsection{How to Play}
+1. Use "w" key to ride the bicycle forward.\\
+2. Use "s" key to ride the bicycle backward.\\
+3. Use "a" key for gear down (change to smaller gear)\\
+4. Use "d" key for gear up (change to larger gear)\\
+5. Use "f" key for disk break (to stop the bicycle suddenly)\\
+6. Use "z" key to Zoom in\\
+7. Use "x" key to Zoom out\\
+8. Use arrow keys to move the screen\\
+\subsection{Interesting aspects of our simulation}
+Our simulation is very close to the reality and our original design. The bicycle has 5 switch-able gears. It has a special mechanism attached to the back gear to keep the chain tight after gear changes. Also while changing gears we delete the old gear and re-initialize it with a new radius. It acts like a spring.\\
+The chain runs over the gears due to collision and friction with the gears. At some gear sizes the chain slags due to its weight and inability of the special gear mechanism to keep it tight but nevertheless the simulation simulates the gear bicycle system closely. The legs of the man are attached to the pedals with distance joints so that his legs move along with the pedal to give the feeling of pedalling.\\
+To move forward we apply a constant angular impulse on the front gear similar to reality, which makes the whole system move due to friction between chain and front gear. To apply sudden brakes we make the angular velocity of tires zero which in reality is made with the help of rubbers pressing against the tires. To move backward we apply angular impulse on both the tires in reverse.\\
+The man is also really life like with the all parts of body joined together by the revolute joints. Along with this we have distance joints on man to make it more realistic as when there is certain psudo force on the man the man behaves like it should in reality.       
+
+\section{Analysis of Plots}
+All the plots were made for 500 iterations and 10 reruns.
+
+
+\subsection{Graph 1}
+\textbf{step time averaged over all reruns (Y) for various iteration values (X) as a bar graph.}\\
+also\\
+\textbf{Plot the loop time averaged over all reruns (Y) for various iteration values (X) on the same graph as a line graph.}
+\begin{center}
+		\includegraphics[scale=0.4]{g10_plot01}
+\end{center}
+The total loop time is monotonically increasing with the number of iterations. At the beginning the slope is high implying the loop/step time time at the beginning of the iteration values of loop is high, later at larger iteration values the loop/step time is low therefore the slope of total loop time at larger iteration values is lower. The graph is almost linear proposing that the total loop time increases with the number of iteration value almost at a constant rate.
+\subsection{Graph 2}
+\textbf{step time averaged over all reruns (Y) for various iteration values (X).}\\
+\textbf{collision time, velocity and position update times averaged over all reruns (Y) for various iteration values (X) on the same graph.}\\
+\textbf{sum of averaged collision, velocity and position times (Y) for various iteration values (X).}\\
+\begin{center}
+		\includegraphics[scale=0.5]{g10_plot02}
+\end{center}
+collision time+velocity upd time+position upd time=sum\\
+This equation is showed in the graph. Also see that the step time is far larger than the sum time implying there are other processes taking time. Also note that at low iteration value the step time is large and it decreases and saturates as the iteration value increases. This can be modelled as follows:\\
+We can say that there is a fixed constant time(F) process taking place at the beginning whenever the simulation is run and every loop iteration takes a constant time(C) which is also known as the step time. Therefore for a particular number of iterations(N): The average step time is (F+C*N)/N \\
+Time spent in velocity updates is far greater than position update and collision time.//
+The average looptime is greater then the average step time as some extra operations are also performed in the main loop per step. 
+\subsection{Graph 3}
+\textbf{Considering the variation in time over reruns to be the deviation in the time measurement, we plotted step time for various iteration values as a line graph with error bars corresponding to the deviation.}\\
+\begin{center}
+		\includegraphics[scale=0.5]{g10_plot03}
+\end{center}
+Similar to the explanation given for graph 3 we can say that the expression governing this graph is close to (C+(F/N)). Also the fixed time(F) taken whenever the simulation is run varies greatly compared to C due to system load, memory load,etc. So we can assume the error is largely due to F/N which is large when N is small because for a small change in F the term F/N is significant. Therefore at low iteration values the graph has higher average step time and greater error corresponding to it and at higher iteration values it has lower average step time and lower error. The error arises due to the uncertainity in the system and not beacuse of the code.
+\subsection{System is loaded}
+Graph 4 and 5 of lab 5 did not give any important inferences so they were excluded.\\
+ If the system was loaded heavily(cpu wise) then the average time taken for all the steps increases which is what is expected as loading cpu with processes means more processes for the cpu to execute as a result average step time increases. But for visible time differences the cpu should be heavily loaded.\\
+ If the system was loaded heavily(ram wise) then the average time taken for all the steps remains almost the same. But if the free ram left is lesser than required by our program then the process will be heavily affected but, this is really hard as the memory requirement of base code are minimal. \section{Conclusions}  
+
+\bibliographystyle{plain}
+\bibliography{cs296_report_10}
+
+\end{document}

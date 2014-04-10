@@ -1,0 +1,43 @@
+<html>
+<head>
+<title>g10_gen_html.py</title>
+</head>
+<body>
+<h1 align="center"><b>Physics Behind the Simulation: A CS296 Report by Group 10</b></h1>
+<p align="center"><b>Bhargav Chippada</b></p>
+<p align="center"><b>		120050053</b></p>
+<p align="center"><b>bhargav.chippada19@gmail.com</b></p>
+<p align="center"><b>		Prateesh Goyal</b></p>
+<p align="center"><b>		120050013</b></p>
+<p align="center"><b>g.pratish@gmail.com</b></p>
+<p align="center"><b>		Bhupendra Singh Bhuarya</b></p>
+<p align="center"><b>		120050040</b></p>
+<p align="center"><b>bsbhuarya@gmail.com</b></p>
+<h1><b>Introduction</b></h1>
+<h1><b>About Our Simulation</b></h1>
+<p>Of all the complex machines we came across we found the geared bicycle with a man riding it interesting and fun to do. At the end of our journey we did something which is close to</p>
+<p  align="center"><img src="../plots/g10_project_plot.png"></p>
+<h1><b>Original Design</b></h1>
+<p>This is the original Design we made using inkscape. It consists of a bicycle with changeable with gears and a man riding it.</p>
+<p  align="center"><img src="../plots/g10_project_plot.png"></p>
+<h1><b>Actual Simulation</b></h1>
+<p>Here are some snapshots of the actual Box2d simulation we made.</p>
+<p  align="center"><img src="../plots/g10_project_plot.png"></p>
+<p  align="center"><img src="../plots/g10_project_plot.png"></p>
+<p  align="center"><img src="../plots/g10_project_plot.png"></p>
+<h1><b>How to Play</b></h1>
+<p>1. Use "w" key to ride the bicycle forward.</p>
+<p>2. Use "s" key to ride the bicycle backward.</p>
+<p>3. Use "a" key for gear down (change to smaller gear)</p>
+<p>4. Use "d" key for gear up (change to larger gear)</p>
+<p>5. Use "f" key for disk break (to stop the bicycle suddenly)</p>
+<p>6. Use "z" key to Zoom in</p>
+<p>7. Use "x" key to Zoom out</p>
+<p>8. Use arrow keys to move the screen</p>
+<h1><b>Interesting aspects of our simulation</b></h1>
+<p>Our simulation is very close to the reality and our original design. The bicycle has 5 switch-able gears. It has a special mechanism attached to the back gear to keep the chain tight after gear changes. Also while changing gears we delete the old gear and re-initialize it with a new radius. It acts like a spring.</p>
+<p>The chain runs over the gears due to collision and friction with the gears. At some gear sizes the chain slags due to its weight and inability of the special gear mechanism to keep it tight but nevertheless the simulation simulates the gear bicycle system closely. The legs of the man are attached to the pedals with distance joints so that his legs move along with the pedal to give the feeling of pedalling.</p>
+<p>To move forward we apply a constant angular impulse on the front gear similar to reality, which makes the whole system move due to friction between chain and front gear. To apply sudden brakes we make the angular velocity of tires zero which in reality is made with the help of rubbers pressing against the tires. To move backward we apply angular impulse on both the tires in reverse.</p>
+<p>The man is also really life like with the all parts of body joined together by the revolute joints. Along with this we have distance joints on man to make it more realistic as when there is certain psudo force on the man the man behaves like it should in reality.</p>
+</body>
+</html>
