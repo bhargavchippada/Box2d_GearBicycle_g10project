@@ -28,27 +28,19 @@ the reality and we are proud of it. We are happy that our simulation has all the
 		\end{center}
 \subsection{Original Design}
 This is the original Design we made using inkscape. It consists of a bicycle with changeable with gears and a man riding it.
-We aspire to make a geared bicycle with proper gear changing mechanism along with a life like man who rides it. 
 	\begin{center}
 		\includegraphics{projectsketch}
 	\end{center}
 \subsection{Actual Simulation}
-We were able to make a simulation of geared bicycle ridden by a man using Box2d. The features such as gears and moving man were in co-operated. \\
+Here are some snapshots of the actual Box2d simulation we made.
 	\begin{center}
-	\includegraphics[scale=0.6]{pic3}
+	\includegraphics[scale=0.4]{pic1}
 	\end{center}
-For chain we created small box like objects and then conected them using revolute joints at the end. This chain was wraped about the gear mechanisms using for loops. The gear changing mechanism involves taking input from keyboard. To Decrtease or increse gear we destro the real gear
- and re-initialize it with a new size. Also we have the chain conserving mechanism which on changing gears moves to tighten the chain.\\
-\begin{center}
-	\includegraphics[scale=0.4]{pic4}
-	\end{center}
-	 Also the man was created using combination of revolute, weld and Distance joint. The body joints were created using revolute joints. Distance joint and weld joints were used to provide posture to the man.\\
-	 \begin{center}
-	\includegraphics[scale=0.4]{pic5}
-	\end{center}
-The whole cycle frame is a single body consisting of various fixtures bound together. The wheels gear system and man have been mounted on this frame. Extensive use of filtering was done to achieve this.\\	
 	\begin{center}
-	\includegraphics[scale=0.4]{pic6}
+	\includegraphics[scale=0.4]{pic2}
+	\end{center}
+	\begin{center}
+	\includegraphics[scale=0.7]{pic3}
 	\end{center}
 \subsection{How to Play}
 1. Use "w" key to ride the bicycle forward.\\
@@ -59,8 +51,6 @@ The whole cycle frame is a single body consisting of various fixtures bound toge
 6. Use "z" key to Zoom in\\
 7. Use "x" key to Zoom out\\
 8. Use arrow keys to move the screen\\
-\subsection{Comparison between original design and actual simulation}
-Everythin said in lab1 was completed. We couldn't implement meachanical switching of gear as it involves a mention in the 3rd dimension.
 \subsection{Interesting aspects of our simulation}
 Our simulation is very close to the reality and our original design. The bicycle has 5 switch-able gears. It has a special mechanism attached to the back gear to keep the chain tight after gear changes. Also while changing gears we delete the old gear and re-initialize it with a new radius. It acts like a spring.\\
 The chain runs over the gears due to collision and friction with the gears. At some gear sizes the chain slags due to its weight and inability of the special gear mechanism to keep it tight but nevertheless the simulation simulates the gear bicycle system closely. The legs of the man are attached to the pedals with distance joints so that his legs move along with the pedal to give the feeling of pedalling.\\
@@ -126,9 +116,9 @@ The call graph provides a very detailed information about different functions be
 \begin{center}
 	\includegraphics[scale=0.07]{release}
 \end{center}
-The call graph is quite different and difficult to understand. It contains certain processes that were not indicated in call graph of debug. The point to be noted is that the time spent in solving constraints associated with the joints have reduced considerably and also time spent in solver can be reduced.
+The call graph is quite different and difficult to understand. It contains certain processes that were not indicated in call graph of debug. The point to be noted is that the time spent in solving constraints associated with the joints have reduced considerably and also time spent in solver can be resuced.
  \subsection{Conclusions}
-We deleted all the unnecessary joints that were present to reduce the time spent. Also I think the code can be optimized for the solver as the time spent in release and debug are drastically different in terms of solver.
+We deleted all the unnecessary joints that were present to reduce the time spent. Also I think the code can be optimized for the solver as the time spent in release and debug are drastically different.
 
 \bibliographystyle{plain}
 \bibliography{cs296_report_10}
