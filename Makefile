@@ -147,14 +147,14 @@ report:
 
 install: setup exe doc report
 	@echo "installing"
-	@cp -r doc $(INSTALL_FOLDER)
 	@cp -r mybins/cs296_10_exe $(INSTALL_FOLDER)
+	@cp -r doc $(INSTALL_FOLDER)
 	@cp -r scripts $(INSTALL_FOLDER)
 
 dist: install distclean
 	@echo $(INSTALL_FOLDER)
 	@cd ..; \
-	tar cvzf cs296_g10_project.tar.gz g10_project
+	tar cvzf cs296_g10_project.tar.gz g10_project README.txt
 	 
 	 
 	

@@ -34,16 +34,20 @@ We aspire to make a geared bicycle with proper gear changing mechanism along wit
 	\end{center}
 \subsection{Actual Simulation}
 We were able to make a simulation of geared bicycle ridden by a man using Box2d. The features such as gears and moving man were in co-operated. \\
-For chain we created small box like objects and then conected them using revolute joints. Also the man was created using combination of revolte, weld and Distance joint.\\
-Here are some snapshots of the actual Box2d simulation we made.
 	\begin{center}
-	\includegraphics[scale=0.4]{pic1}
+	\includegraphics[scale=0.6]{pic3}
 	\end{center}
-	\begin{center}
-	\includegraphics[scale=0.4]{pic2}
+For chain we created small box like objects and then conected them using revolute joints at the end. The gear changing mechanism involves taking input from keyboard. To Decrtease or increse gear we destro the real gear and re-initialize it with a new size. \\
+\begin{center}
+	\includegraphics[scale=0.4]{pic4}
 	\end{center}
+	 Also the man was created using combination of revolute, weld and Distance joint.\\
+	 \begin{center}
+	\includegraphics[scale=0.4]{pic5}
+	\end{center}
+The whole cycle frame is a single body consisting of varioyus fixtures bound together. The wheels gear system and man have been mounted on this frame. Extensive use of filtering was done to achieve this.\\	
 	\begin{center}
-	\includegraphics[scale=0.7]{pic3}
+	\includegraphics[scale=0.4]{pic6}
 	\end{center}
 \subsection{How to Play}
 1. Use "w" key to ride the bicycle forward.\\
@@ -55,7 +59,7 @@ Here are some snapshots of the actual Box2d simulation we made.
 7. Use "x" key to Zoom out\\
 8. Use arrow keys to move the screen\\
 \subsection{Comparison between original design and actual simulation}
-Everythin said in lab1 was completed.
+Everythin said in lab1 was completed. We couldn't implement meachanical switching of gear as it involves a mention in the 3rd dimension.
 \subsection{Interesting aspects of our simulation}
 Our simulation is very close to the reality and our original design. The bicycle has 5 switch-able gears. It has a special mechanism attached to the back gear to keep the chain tight after gear changes. Also while changing gears we delete the old gear and re-initialize it with a new radius. It acts like a spring.\\
 The chain runs over the gears due to collision and friction with the gears. At some gear sizes the chain slags due to its weight and inability of the special gear mechanism to keep it tight but nevertheless the simulation simulates the gear bicycle system closely. The legs of the man are attached to the pedals with distance joints so that his legs move along with the pedal to give the feeling of pedalling.\\
