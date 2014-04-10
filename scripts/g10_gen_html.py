@@ -100,8 +100,6 @@ print("<body>")
 for hline in texflines:
 	lineformat=""
 	if(sectionfunc(hline)!=""):
-		if(sectioncount==5):
-			break
 		lineformat=sectionfunc(hline)
 	elif(textbffunc(hline)!=""):
 		lineformat=textbffunc(hline)
@@ -125,7 +123,8 @@ for hline in texflines:
 		if(aufor<=9 and aufor>0):
 			lineformat='<p align="center"><b>'+lineformat.lstrip('<p>').rstrip('</p>')+"</b></p>"
 			aufor+=1;
-		print(lineformat)
+		if(sectioncount==6 or sectioncount==0):
+			print(lineformat)
 print("</body>")
 print("</html>")
 outputf.close()
