@@ -1,0 +1,64 @@
+\documentclass[11pt]{article}
+\usepackage[left=0.5in,right=0.5in,top=1in,bottom=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{mathptmx}
+\begin{document}
+
+
+\title{Physics Behind the Simulation: A CS296 Report by Group 10}
+\author{Bhargav Chippada\\
+		120050053\\
+		\texttt{bhargav.chippada19@gmail.com},\\
+		Prateesh Goyal\\
+		120050013\\
+		\texttt{g.pratish@gmail.com},\\
+		Bhupendra Singh Bhuarya\\
+		120050040\\
+		\texttt{bsbhuarya@gmail.com}}
+\date{\today}
+\maketitle
+\section{Introduction} 
+The purpose of making this report is to explain our CS296 Box2d project. We simulated a geared bicycle in Box2d. The work done for this project is our own and we have not plagiarized it from anywhere
+\section{About Our Simulation}
+Of all the complex machines we came across we found the geared bicycle with a man riding it interesting and fun to do. At the end of our journey we did something which is close to
+the reality and we are proud of it. We are happy that our simulation has all the features that we imagined it to have. We optimized it over and over again for better simulation and performance. As the end result we got a fast, fun to play with Geared bicycle along with a man riding it. we can switch the gears easily, move forward, backward and apply sudden brakes. Here is the snapshot of our simulation:
+		\begin{center}
+		\includegraphics[scale=0.5]{pic1.eps}
+		\end{center}
+\subsection{Original Design}
+This is the original Design we made using inkscape. It consists of a bicycle with changeable with gears and a man riding it.
+	\begin{center}
+		\includegraphics{projectsketch.png}
+	\end{center}
+\subsection{Actual Simulation}
+Here are some snapshots of the actual Box2d simulation we made.
+	\begin{center}
+	\includegraphics[scale=0.5]{pic1.eps}
+	\end{center}
+	\begin{center}
+	\includegraphics[scale=0.5]{pic2.eps}
+	\end{center}
+	\begin{center}
+	\includegraphics[scale=0.5]{pic3.eps}
+	\end{center}
+\subsection{How to Play}
+1. Use "w" key to ride the bicycle forward.\\
+2. Use "s" key to ride the bicycle backward.\\
+3. Use "a" key for gear down (change to smaller gear)\\
+4. Use "d" key for gear up (change to larger gear)\\
+5. Use "f" key for disk break (to stop the bicycle suddenly)\\
+6. Use "z" key to Zoom in\\
+7. Use "x" key to Zoom out\\
+8. Use arrow keys to move the screen\\
+\subsection{Interesting aspects of our simulation}
+Our simulation is very close to the reality and our original design. The bicycle has 5 switch-able gears. It has a special mechanism attached to the back gear to keep the chain tight after gear changes. Also while changing gears we delete the old gear and re-initialize it with a new radius. It acts like a spring.\\
+The chain runs over the gears due to collision and friction with the gears. At some gear sizes the chain slags due to its weight and inability of the special gear mechanism to keep it tight but nevertheless the simulation simulates the gear bicycle system closely. The legs of the man are attached to the pedals with distance joints so that his legs move along with the pedal to give the feeling of pedalling.\\
+To move forward we apply a constant angular impulse on the front gear similar to reality, which makes the whole system move due to friction between chain and front gear. To apply sudden brakes we make the angular velocity of tires zero which in reality is made with the help of rubbers pressing against the tires. To move backward we apply angular impulse on both the tires in reverse.\\
+The man is also really life like with the all parts of body joined together by the revolute joints. Along with this we have distance joints on man to make it more realistic as when there is certain psudo force on the man the man behaves like it should in reality.       
+
+\section{Conclusions}  
+
+\bibliographystyle{plain}
+\bibliography{cs296_report_10}
+
+\end{document}

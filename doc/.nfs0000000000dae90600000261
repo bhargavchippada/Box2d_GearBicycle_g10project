@@ -1,0 +1,23 @@
+\begin{thebibliography}{1}
+
+\bibitem{box2d}
+Erin Catto.
+\newblock Box@d manual.
+\newblock \url{http://box2d.org/manual.pdf}, 2007.
+\newblock Online.
+
+\bibitem{matplot}
+Matplot.
+
+\bibitem{roberts}
+Andrew Roberts.
+\newblock Getting to grips with latex.
+
+\bibitem{HCVerma}
+H~C Verma.
+\newblock {\em Concepts of Physics}.
+
+\bibitem{Perf}
+Perf wiki.
+
+\end{thebibliography}

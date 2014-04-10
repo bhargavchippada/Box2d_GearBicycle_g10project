@@ -1,0 +1,41 @@
+#!/bin/bash
+LIMIT=150
+LIMIT2=15
+lineno=1
+for ((a=1; a <= LIMIT ; a++))  # Double parentheses, and naked "LIMIT"
+do
+var1=0.0
+var2=0.0
+var3=0.0
+var4=0.0
+var5=0.0
+var6=0.0
+for ((b=1; b <= LIMIT2 ; b++))  # Double parentheses, and naked "LIMIT"
+do
+varl=${lineno}p
+sed -n $varl < ../data/g10_lab05data_01.csv >> temp.csv
+lineno=`echo "$lineno + 1" |bc`
+done
+while IFS=',' read iteration rerun step collision velocity position loop
+do
+var1=`echo "scale=4;$var1 + $iteration" | bc`
+var2=`echo "scale=4;$var2 + $step" | bc`
+var3=`echo "scale=4;$var3 + $collision" | bc`
+var4=`echo "scale=4;$var4 + $velocity" | bc`
+var5=`echo "scale=4;$var5 + $position" | bc`
+var6=`echo "scale=4;$var6 + ($step * $step)" | bc`
+done < temp.csv
+rm -rf temp.csv
+
+var6=`echo "scale=4;$var6 / 15.0" | bc`
+var1=`echo "scale=4;$var1 / 15.0" | bc`
+var2=`echo "scale=4;$var2 / 15.0" | bc`
+var3=`echo "scale=4;$var3 / 15.0" | bc`
+var4=`echo "scale=4;$var4 / 15.0" | bc`
+var5=`echo "scale=4;$var5 / 15.0" | bc`
+var6=`echo "scale=4;$var6 - ($var2 * $var2)" | bc`
+var6=`echo "scale=4;sqrt($var6)" | bc`
+echo "$var1,$var2,$var3,$var4,$var5,$var6" >> temp2.csv
+done
+exit
+
