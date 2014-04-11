@@ -14,6 +14,7 @@ using namespace std;
 
 namespace cs296
 {
+	///front gear
 	b2Body* frontgear;
 	///back wheel
 	b2Body* wheel1;
@@ -30,17 +31,21 @@ namespace cs296
 	void dominos_t::keyboard(unsigned char key)
 	{
 	  switch(key){
+		///w for accleration
 		case('w'):
 		frontgear->ApplyAngularImpulse( -120,0 );
 		break;
+		///s for deaccleration
 		case('s'):
 		wheel1->ApplyAngularImpulse( 60,0 );
 		wheel2->ApplyAngularImpulse( 60,0 );
 		break;
+		///f for disk brakes
 		case('f'):
 		wheel1->SetAngularVelocity(0);
 		wheel2->SetAngularVelocity(0);
 		break;
+		///decrease gear size by (pressing a) deleting the original gear and re-initializing it with new gear
 		case('a'):
 		if(gearnum>0) gearnum=gearnum-1;
 		else break;
@@ -48,6 +53,7 @@ namespace cs296
         gearshape.m_radius = (gearnum*0.5f+1.0f);
 		backgearFixture=gearbody1->CreateFixture(&gearfd);
 		break;
+		///increase gear size by d
 		case('d'):
 		if(gearnum<4) gearnum=gearnum+1;
 		else break;
@@ -64,16 +70,23 @@ dominos_t::dominos_t()
 	{
 	  b2EdgeShape shape; 
 	  shape.Set(b2Vec2(-180.0f, -3.0f), b2Vec2(180.0f, -3.0f)); 
+	  ///grnd fixture for ground body
 	  b2FixtureDef *grnd = new b2FixtureDef;
 	  grnd->filter.groupIndex = -5;//
 	  grnd->shape=&shape;
 	  grnd->friction=1;
+	  ///bd is bodydef for ground
 	  b2BodyDef bd;
+	  ///b1 creates the complete ground body
 	  b2Body* b1=m_world->CreateBody(&bd); 
 	  b1->CreateFixture(grnd);
-	  
+	  ///uphill on the ground
+	  shape.Set(b2Vec2(180.0f, -3.0f), b2Vec2(280.0f, 9.0f)); 
+	  grnd->shape=&shape;
+	  b1->CreateFixture(grnd);
+	  ///little box on the ground
 	  b2PolygonShape shape1;
-	  shape1.SetAsBox(1,4,b2Vec2(50,0),0); 
+	  shape1.SetAsBox(1,.5,b2Vec2(50,-2.5),0); 
 	  grnd->shape=&shape1;
 	  b1->CreateFixture(grnd);
 	}
@@ -81,6 +94,7 @@ dominos_t::dominos_t()
 	 ///Add wheels
 	 b2CircleShape circleDef;
 	 circleDef.m_radius = 8;
+	 ///fd2 provides fixture def for wheel1 and wheel2
 	 b2FixtureDef *fd2 = new b2FixtureDef;
 	 fd2->density = 0.1f;
 	 fd2->friction = 1;
@@ -88,15 +102,15 @@ dominos_t::dominos_t()
 	 fd2->filter.groupIndex = -1;//
 	 fd2->shape=new b2CircleShape;
 	 fd2->shape=&circleDef;
-
+	 ///wheelDef is bodydef for wheel1 and wheel2
 	 b2BodyDef* wheelDef = new b2BodyDef;
 	 wheelDef->type = b2_dynamicBody;
 	 wheelDef->allowSleep = false;
-	 
+	 ///creating rear wheel
 	 wheelDef->position.Set(-20,8);
 	 wheel1 = m_world->CreateBody(wheelDef);
 	 wheel1->CreateFixture(fd2);
-	 
+	 ///creating front wheel
 	 wheelDef->position.Set(10,8);
 	 wheel2 = m_world->CreateBody(wheelDef);
 	 wheel2->CreateFixture(fd2);
@@ -104,6 +118,7 @@ dominos_t::dominos_t()
 	 ///Add cycle frame
 	 b2PolygonShape boxshape;
 	 boxshape.SetAsBox(7,0.6,b2Vec2(7,0),0);
+	 ///fd1 provides fixture def for cycle frame
 	 b2FixtureDef *fd1 = new b2FixtureDef;
 	 fd1->density = 0.1f;
 	 fd1->friction = 0.1f;
@@ -111,6 +126,7 @@ dominos_t::dominos_t()
 	 fd1->filter.groupIndex = -1;//
 	 fd1->shape = new b2PolygonShape;
 	 fd1->shape = &boxshape;
+	 ///rodDef provides bodydef for cycle frame
 	 b2BodyDef* rodDef=new b2BodyDef;
 	 rodDef->type= b2_dynamicBody;
 	 ///0* rod between gears
@@ -145,6 +161,7 @@ dominos_t::dominos_t()
 	 ///Upper gear system roller 
 	 b2CircleShape rollershape;
 	 rollershape.m_radius=0.75f;
+	 ///rollerfd defining fixture for upper roller and lower roller
 	 b2FixtureDef rollerfd;
 	 rollerfd.density = 1.0f;
 	 rollerfd.friction = 1000.0f;
@@ -153,6 +170,7 @@ dominos_t::dominos_t()
 	 rollerfd.filter.groupIndex = -1;//
 	 rollerfd.filter.categoryBits = 0x0002;//
 	 rollerfd.filter.maskBits = 0x0004;//
+	 ///rollerbd defining bodydef for upper roller
 	 b2BodyDef rollerbd;
 	 rollerbd.type= b2_dynamicBody;
 	 rollerbd.position.Set(rodbody->GetPosition().x+4.5*cosf(b2_pi/4),rodbody->GetPosition().y-4.5*sinf(b2_pi/4));
@@ -165,12 +183,15 @@ dominos_t::dominos_t()
 	 m_world->CreateJoint(&JointDef_roller1);
 ////////////////////////////////////////////////////////////////////////////// 
 	///Lower gear system bar
+	///barDef is bodydef for lower gear bar
 	b2BodyDef barDef;
 	barDef.type= b2_dynamicBody;
 	b2Vec2 barjointpos(rodbody->GetPosition().x+4.5*cosf(b2_pi/4),rodbody->GetPosition().y-4.5*sinf(b2_pi/4));
 	barDef.position=barjointpos;
 	boxshape.SetAsBox(1.75f,0.4f,b2Vec2(-1.75*cosf(b2_pi/4),-1.75*sinf(b2_pi/4)),b2_pi/4);
+	///barbd is body for Lower gear system bar
 	b2Body* barbd=m_world->CreateBody(&barDef);
+	///same fixture as rodbody
 	barbd->CreateFixture(fd1);
 	///Adding Revolute Joint between lower bar and upper bar
 	b2RevoluteJointDef JointDef_gearbar;
@@ -204,10 +225,10 @@ dominos_t::dominos_t()
 	 ///Adding Revolute Joints between tires and cycle frame
 	 b2RevoluteJointDef revoluteJointDef;
 	 revoluteJointDef.enableMotor = true;
-	 
+	 ///rear joint
 	 revoluteJointDef.Initialize(rodbody, wheel1, wheel1->GetWorldCenter());
 	 m_world->CreateJoint(&revoluteJointDef);
-	 
+	 ///front joint
 	 revoluteJointDef.Initialize(rodbody, wheel2, wheel2->GetWorldCenter());
 	 m_world->CreateJoint(&revoluteJointDef);
 //////////////////////////////////////////////////////////////////////////////
@@ -424,28 +445,23 @@ dominos_t::dominos_t()
 	frontgear = m_world->CreateBody(&gearbd);
 	frontgear->CreateFixture(&gearfd);
 	
-	///Dummy gear system
-	for(int i=0;i<5;i++)
-		 {	
-			 gearshape.m_radius = 1+i*0.5f;
-			 fd1->density = 0.01f;
-			 fd1->shape=&gearshape;
-			 rodbody->CreateFixture(fd1);
-		 }
+
 ////////////////////////////////////////////////////////////////////////////// 
 	///Adding Revolute joints between gears and cycle frame
+	///rear one
 	b2RevoluteJointDef jointDef1;
 	jointDef1.Initialize(gearbody1, rodbody, gearbody1->GetWorldCenter());
 	m_world->CreateJoint(&jointDef1);
-
+	///front one
 	b2RevoluteJointDef jointDef2;
 	jointDef2.Initialize(frontgear, rodbody, frontgear->GetWorldCenter());
 	m_world->CreateJoint(&jointDef2);
 //////////////////////////////////////////////////////////////////////////////
-	///Adding the Chain
-	b2Vec2 vs[100];
-	b2Body* conveyer[100];
-	
+	///Adding the Chain the b2vec2 stores revolute joint positions for each element of chain
+	b2Vec2 vs[54];
+	///chain body
+	b2Body* conveyer[54];
+	///chainfd defines fixture for chain bodies
 	b2FixtureDef chainfd;
     chainfd.filter.categoryBits = 0x0004;
     chainfd.filter.maskBits = 0x0002;
@@ -455,9 +471,10 @@ dominos_t::dominos_t()
 	chainfd.shape = &chainshape;
 	chainfd.density=1.5f;
 	chainfd.friction=1000.0f;
+	///chaindef defines bodydef for chain body
 	b2BodyDef chainDef;
 	chainDef.type = b2_dynamicBody;
-	
+	///setting positions for each component of chain
 	///Top horizontal
  for (int i = 0; i < 16; ++i)
 	{
@@ -571,6 +588,7 @@ dominos_t::dominos_t()
 	
 //////////////////////////////////////////////////////////////////////////////	
 	///Creating connecting pedal rod and pedals
+	///pedalfd fixture provides fixtures for pedalrod pedal1 and pedal2
     b2FixtureDef pedalfd;
     pedalfd.filter.groupIndex = -1;
 	pedalfd.density=1.0f;  
@@ -580,7 +598,7 @@ dominos_t::dominos_t()
 	b2BodyDef pedalDef;
 	pedalDef.type = b2_dynamicBody;
 	pedalDef.position.Set(-6.0f, 8.0f);
-	///Creating the rod connecting the pedals which i call pedalrod
+	///Creating the rod connecting the pedals which i call pedalrod 
 	b2Body* pedalbody = m_world->CreateBody(&pedalDef);
 	pedalbody->CreateFixture(&pedalfd);
 	
@@ -612,20 +630,23 @@ dominos_t::dominos_t()
 	m_world->CreateJoint(&jointDef6);
 //////////////////////////////////////////////////////////////////////////////
 	///Creating the legs of man on pedal
+	///legfd fixture provides fixtures for leg1 and leg2
 	b2FixtureDef legfd;
 	b2PolygonShape legshape;
 	legfd.filter.groupIndex = -1;
 	legfd.density=0.1f;  
 	legshape.SetAsBox(1.0f,8.0f);
 	legfd.shape = &legshape;
+	///legDef provides bodydef for leg1 and leg2
 	b2BodyDef legDef;
 	legDef.type = b2_dynamicBody;
 	legDef.position.Set(-6.0f, 12.0f);
-	
+	///legbody2 is b2 body for leg2
 	b2Body* legbody1 = m_world->CreateBody(&legDef);
 	legbody1->CreateFixture(&legfd);
 	
 	///Distance Joint behind leg1 and pedal1
+	///used 2 distance joints for extra strength
 	b2DistanceJointDef jointleg1Def;
 	b2Vec2 footpos1;
 	footpos1.Set(pedal1->GetWorldCenter().x-1.25f,pedal1->GetWorldCenter().y+0.25f);
@@ -635,13 +656,15 @@ dominos_t::dominos_t()
 	footpos1.Set(pedal1->GetWorldCenter().x+1.25f,pedal1->GetWorldCenter().y+0.25f);
 	jointleg1Def.Initialize(legbody1, pedal1,footpos1,footpos1);
 	m_world->CreateJoint(&jointleg1Def);
-	
+	///leg 2
 	legDef.position.Set(-6.0f, 12.0f);
 	legshape.SetAsBox(1.0f,8.0f,b2Vec2(8*cosf(b2_pi/2-b2_pi/15),8*sinf(b2_pi/2-b2_pi/15)),-b2_pi/15);
+	///legbody2 is b2 body for leg2
 	b2Body* legbody2 = m_world->CreateBody(&legDef);
 	legbody2->CreateFixture(&legfd);
 	
 	///Distance Joint behind leg2 and pedal2
+	///used 2 distance joints for extra strength
 	b2DistanceJointDef jointleg2Def;
 	b2Vec2 footpos2;
 	footpos2.Set(pedal2->GetWorldCenter().x-1.25,pedal2->GetWorldCenter().y+0.25f);
@@ -676,6 +699,14 @@ dominos_t::dominos_t()
 	b2WeldJointDef jointDef8;
 	jointDef8.Initialize(seatbody, rodbody, seatbody->GetWorldCenter());
 	m_world->CreateJoint(&jointDef8);
+		///Dummy gear system added to cycle frame only
+	for(int i=0;i<5;i++)
+		 {	
+			 gearshape.m_radius = 1+i*0.5f;
+			 fd1->density = 0.01f;
+			 fd1->shape=&gearshape;
+			 rodbody->CreateFixture(fd1);
+		 }
 }
   sim_t *sim = new sim_t("Dominos", dominos_t::create);
 }
