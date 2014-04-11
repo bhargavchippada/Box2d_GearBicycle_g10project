@@ -15,7 +15,8 @@ DOXYGEN = doxygen
 ######################################
 # Project Name (generate executable with this name)
 TARGET = cs296_10_exe
-
+#Install Foler
+INSTALL_FOLDER=../install
 # Project Paths
 PROJECT_ROOT=$(CURDIR)
 EXTERNAL_ROOT=$(PROJECT_ROOT)/external
@@ -58,7 +59,7 @@ INCS := $(wildcard $(SRCDIR)/*.hpp)
 OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 OBJS_O := $(filter-out $(OBJDIR)/main.o, $(OBJS))
 SRCS_O := $(filter-out $(SRCDIR)/main.cpp, $(SRCS))
-.PHONY: all setup doc clean distclean exe share exelib report
+.PHONY: all setup doc clean distclean exe share exelib report install dist
 
 all: setup
 	
@@ -137,9 +138,24 @@ distclean: clean
 	@$(RM) -rf $(BINDIR) $(EXTERNAL_ROOT)/include/* $(EXTERNAL_ROOT)/lib/* $(EXTERNAL_ROOT)/src/Box2D
 report:
 	@cd doc; \
-	latex  cs296_report_10; \
+	pdflatex  cs296_report_10; \
 	bibtex cs296_report_10; \
-	latex cs296_report_10; \
-	latex cs296_report_10; \
-	latex cs296_report_10; \
-	dvipdf cs296_report_10.dvi cs296_report_10.pdf;
+	pdflatex cs296_report_10; \
+	pdflatex cs296_report_10; \
+	pdflatex cs296_report_10; \
+	#dvipdf cs296_report_10.dvi cs296_report_10.pdf;
+
+install: setup exe doc report
+	@echo "installing"
+	@cp -r mybins/cs296_10_exe $(INSTALL_FOLDER)
+	@cp -r doc $(INSTALL_FOLDER)
+	@cp -r scripts $(INSTALL_FOLDER)
+
+dist: install distclean
+	@echo $(INSTALL_FOLDER)
+	@cd ..; \
+	tar cvzf cs296_g10_project.tar.gz g10_project README.txt
+	 
+	 
+	
+	
